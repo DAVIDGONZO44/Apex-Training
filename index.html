@@ -1,0 +1,2477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<!-- APEX v4.1 - PWA enabled -->
+
+<!-- PWA -->
+<link rel="manifest" href="apex-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="APEX">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="apex-icon-192.png">
+<link rel="apple-touch-startup-image" href="apex-icon-512.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#070709">
+<title>APEX Training v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070709;--surface:#0b0b10;--card:#0f0f16;--card2:#14141c;
+  --border:#191924;--border2:#252535;
+  --gold:#c9a84c;--gold2:#e0ba6a;--gold3:#f0d090;--amber:#c49a6c;--steel:#8899aa;
+  --white:#ededf5;--muted:#3e3e55;--muted2:#737390;--text:#b8b8cc;
+  --green:#2dd4a0;--red:#e05555;
+  --nav-h:60px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:var(--bg);}
+body{color:var(--text);font-family:'Montserrat',sans-serif;display:flex;flex-direction:column;}
+
+/* TOP BAR */
+.topbar{
+  height:52px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;background:var(--surface);border-bottom:1px solid var(--border);
+  flex-shrink:0;z-index:10;
+}
+.tb-logo{font-family:'Montserrat',sans-serif;font-weight:800;font-size:12px;letter-spacing:5px;color:var(--white);text-transform:uppercase;}
+.tb-logo span{color:var(--gold);}
+.tb-profile{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border2);padding:5px 10px;}
+.tb-av{width:24px;height:24px;border-radius:50%;background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--gold);}
+.tb-name{font-size:11px;font-weight:600;color:var(--white);}
+.tb-goal{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;}
+
+/* SCREEN SYSTEM - bulletproof */
+.app-body{flex:1;overflow:hidden;position:relative;}
+
+/* Every screen is absolutely positioned, filling the container, hidden by default */
+.screen{
+  display:none !important;
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  background:var(--bg);
+}
+.screen.active{
+  display:block !important;
+}
+.screen.coach-screen.active{
+  display:flex !important;
+  flex-direction:column;
+}
+.screen.coach-screen .coach-body{
+  flex:1;overflow-y:auto;padding:16px;
+}
+.screen.coach-screen .coach-footer{
+  flex-shrink:0;border-top:1px solid var(--border);background:var(--surface);padding:12px 16px 16px;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  height:var(--nav-h);display:flex;align-items:stretch;
+  background:var(--surface);border-top:1px solid var(--border);
+  flex-shrink:0;z-index:10;
+}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;padding:6px 4px;position:relative;}
+.bn::after{content:'';position:absolute;top:0;left:25%;right:25%;height:1px;background:var(--gold);transform:scaleX(0);transition:transform .25s;}
+.bn.on::after{transform:scaleX(1);}
+.bn svg{width:19px;height:19px;}
+.bn svg *{stroke:var(--muted);transition:stroke .2s;}
+.bn.on svg *{stroke:var(--gold);}
+.bn-lbl{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;transition:color .2s;}
+.bn.on .bn-lbl{color:var(--gold);}
+
+/* SHARED */
+.pg-head{padding:20px 16px 16px;border-bottom:1px solid var(--border);}
+.pg-kicker{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.pg-bar{width:18px;height:1px;background:var(--gold);}
+.pg-tag{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;}
+.pg-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--white);line-height:1;letter-spacing:-.5px;}
+.pg-title em{font-style:italic;color:var(--gold);}
+.pg-sub{font-size:11px;font-weight:300;color:var(--muted2);margin-top:5px;line-height:1.6;}
+.pg-body{padding:16px;}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin-bottom:10px;}
+.card-bar{height:2px;}
+.card-body{padding:12px 14px;}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-bottom:12px;}
+.stat-box{background:var(--card);padding:12px 10px;}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1;margin-bottom:2px;}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;}
+
+/* TODAY CARD */
+.today-card{background:var(--card);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin-bottom:10px;}
+.today-bar{height:2px;background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.today-body{padding:14px;}
+.today-lbl{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+.today-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--white);margin-bottom:4px;}
+.today-sub{font-size:11px;color:var(--muted2);margin-bottom:12px;}
+.go-btn{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--bg);background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;padding:9px 18px;cursor:pointer;}
+
+/* QA GRID */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.qa-card{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:14px;cursor:pointer;transition:border-color .2s;}
+.qa-card:hover{border-color:rgba(201,168,76,.3);}
+.qa-icon svg{width:18px;height:18px;margin-bottom:8px;}
+.qa-icon svg *{stroke:var(--gold);stroke-width:1.2;}
+.qa-title{font-size:11px;font-weight:700;color:var(--white);margin-bottom:2px;}
+.qa-desc{font-size:10px;color:var(--muted2);}
+
+/* COACH TEASER */
+.coach-teaser{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.18);border-radius:8px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.ct-av{width:36px;height:36px;border-radius:50%;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ct-av svg{width:16px;height:16px;}
+.ct-av svg *{stroke:var(--gold);}
+.ct-title{font-size:12px;font-weight:700;color:var(--white);margin-bottom:2px;}
+.ct-sub{font-size:10px;color:var(--muted2);}
+
+/* WORKOUT */
+.week-strip{display:flex;gap:2px;padding:10px 12px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;}
+.week-strip::-webkit-scrollbar{display:none;}
+.wk-day{flex-shrink:0;text-align:center;padding:6px 8px;border-radius:6px;border:1px solid var(--border);background:var(--card);cursor:pointer;min-width:46px;}
+.wk-day.on{border-color:var(--gold);background:rgba(201,168,76,.06);}
+.wk-n{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1px;color:var(--muted);margin-bottom:2px;}
+.wk-nm{font-size:8px;font-weight:700;color:var(--muted2);}
+.wk-pct{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--muted2);}
+.wk-day.on .wk-n,.wk-day.on .wk-nm,.wk-day.on .wk-pct{color:var(--gold);}
+
+.day-tabs{display:flex;gap:2px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;}
+.day-tabs::-webkit-scrollbar{display:none;}
+.dt-btn{flex-shrink:0;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:6px 10px;background:var(--card);border:1px solid var(--border2);color:var(--muted2);cursor:pointer;transition:all .2s;}
+.dt-btn.on{border-color:rgba(201,168,76,.4);color:var(--gold);background:rgba(201,168,76,.06);}
+
+.rx-bar{padding:12px 16px;background:rgba(201,168,76,.04);border-bottom:1px solid var(--border);}
+.rx-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--white);margin-bottom:4px;}
+.rx-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.rx-chip{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;padding:3px 8px;border:1px solid rgba(201,168,76,.3);color:var(--gold);background:rgba(201,168,76,.06);text-transform:uppercase;}
+
+.ex-card{margin:0 10px 8px;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.ex-top{height:2px;}
+.ex-body{padding:11px 12px;}
+.ex-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.ex-name{font-size:12px;font-weight:700;color:var(--white);margin-bottom:2px;}
+.ex-note{font-size:10px;color:var(--muted2);line-height:1.4;}
+.ex-right{display:flex;gap:4px;align-items:center;flex-shrink:0;}
+.ex-badge{font-family:'DM Mono',monospace;font-size:9px;padding:3px 6px;background:var(--card2);border:1px solid var(--border2);border-radius:3px;color:var(--muted2);}
+.ex-badge.hi{color:var(--gold);border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.06);}
+.log-btn{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1px;padding:4px 8px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);color:var(--gold);cursor:pointer;text-transform:uppercase;border-radius:3px;}
+
+.ex-log{display:none;padding:0 12px 12px;border-top:1px solid var(--border);}
+.ex-log.open{display:block;}
+.log-tgt{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.2);border-left:2px solid var(--gold);border-radius:4px;padding:7px 10px;margin:8px 0;font-size:10px;color:var(--gold2);font-weight:600;}
+.set-row{display:grid;grid-template-columns:22px 1fr 1fr auto;gap:5px;align-items:center;margin-bottom:5px;margin-top:6px;}
+.set-n{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);text-align:center;}
+.set-in{background:var(--surface);border:1px solid var(--border2);color:var(--white);font-family:'DM Mono',monospace;font-size:12px;padding:7px 8px;border-radius:4px;width:100%;outline:none;-webkit-appearance:none;}
+.set-in:focus{border-color:rgba(201,168,76,.4);}
+.set-in::placeholder{color:var(--muted);font-size:10px;}
+.pr-f{font-family:'DM Mono',monospace;font-size:7px;color:var(--gold);opacity:0;transition:opacity .2s;white-space:nowrap;}
+.pr-f.show{opacity:1;}
+.save-btn{width:100%;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;padding:8px;cursor:pointer;margin-top:6px;text-transform:uppercase;border-radius:4px;}
+
+.hist{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px;}
+.hist-chip{font-family:'DM Mono',monospace;font-size:7px;padding:2px 5px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:3px;color:var(--muted2);}
+.hist-chip.pr{border-color:rgba(255,215,0,.3);color:#ffd700;}
+.ol-hint{font-size:9px;color:var(--green);margin-top:3px;font-style:italic;display:none;opacity:.85;}
+.ol-hint.show{display:block;}
+.cat-lbl{display:flex;align-items:center;gap:8px;padding:10px 16px 4px;}
+.cat-lbl span{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;white-space:nowrap;}
+.cat-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* NUTRITION */
+.nut-day-toggle{display:flex;gap:6px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);}
+.ndt{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:7px 14px;border:1px solid var(--border2);color:var(--muted2);background:var(--card);cursor:pointer;transition:all .2s;}
+.ndt.on{border-color:rgba(201,168,76,.4);color:var(--gold);background:rgba(201,168,76,.06);}
+.macro-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);}
+.mr-box{background:var(--card2);padding:11px 8px;text-align:center;}
+.mr-val{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;line-height:1;}
+.mr-lbl{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-top:2px;}
+.meal-card{margin:0 10px 8px;background:var(--card);border:1px solid var(--border2);border-radius:8px;overflow:hidden;}
+.meal-bar{height:2px;}
+.meal-body{padding:12px 14px;}
+.meal-time{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;margin-bottom:4px;}
+.meal-name{font-size:13px;font-weight:700;color:var(--white);margin-bottom:3px;}
+.meal-foods{font-size:10px;color:var(--muted2);line-height:1.5;margin-bottom:8px;}
+.meal-chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+.mc{font-family:'DM Mono',monospace;font-size:8px;padding:2px 6px;border-radius:999px;border:1px solid;}
+.mc-p{color:#8faabf;border-color:rgba(143,170,191,.3);background:rgba(143,170,191,.06);}
+.mc-c{color:var(--gold);border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.07);}
+.mc-f{color:#c49a6c;border-color:rgba(196,154,108,.3);background:rgba(196,154,108,.06);}
+.mc-cal{color:var(--white);border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.04);}
+.log-meal-btn{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1px;padding:5px 10px;background:rgba(45,212,160,.07);border:1px solid rgba(45,212,160,.2);color:var(--green);cursor:pointer;text-transform:uppercase;border-radius:3px;transition:all .2s;}
+.log-meal-btn.done{background:rgba(45,212,160,.15);}
+
+/* PROGRESS */
+.wi-row{display:flex;gap:8px;margin-bottom:14px;}
+.wi-in{flex:1;background:var(--card);border:1px solid var(--border2);color:var(--white);font-family:'DM Mono',monospace;font-size:13px;padding:10px 12px;outline:none;-webkit-appearance:none;border-radius:4px;}
+.wi-in:focus{border-color:rgba(201,168,76,.4);}
+.wi-in::placeholder{color:var(--muted);font-size:10px;}
+.wi-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:var(--bg);font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 16px;cursor:pointer;border-radius:4px;white-space:nowrap;}
+.wt{width:100%;border-collapse:collapse;}
+.wt th{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1.5px;color:var(--muted2);text-transform:uppercase;padding:9px 10px;text-align:left;border-bottom:1px solid var(--border);}
+.wt td{padding:10px;font-size:11px;font-weight:500;border-bottom:1px solid var(--border);}
+.wt td.dn{color:var(--green);}
+.wt td.up{color:var(--red);}
+.wt td.nt{color:var(--muted2);}
+.del-w{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;}
+.pr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;}
+.pr-card{background:var(--card);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:11px;}
+.pr-ex{font-size:9px;color:var(--muted2);margin-bottom:3px;font-weight:500;}
+.pr-w{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--gold2);line-height:1;}
+.pr-r{font-size:8px;color:var(--muted);margin-top:2px;}
+.sec-card{background:var(--card);border:1px solid var(--border2);border-radius:8px;margin-bottom:12px;overflow:hidden;}
+.sc-head{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sc-title{font-size:12px;font-weight:700;color:var(--white);}
+.sc-tag{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;}
+.sc-body{padding:14px;}
+
+/* COACH */
+.coach-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;}
+.coach-av{width:32px;height:32px;border-radius:50%;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.coach-av svg{width:13px;height:13px;}
+.coach-av svg *{stroke:var(--gold);}
+.coach-nm{font-size:12px;font-weight:700;color:var(--white);}
+.coach-status{display:flex;align-items:center;gap:4px;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1px;color:var(--green);text-transform:uppercase;}
+.coach-dot{width:4px;height:4px;background:var(--green);border-radius:50%;animation:dotPulse 2s ease-in-out infinite;}
+@keyframes dotPulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+.coach-welcome{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px 20px;min-height:50vh;}
+.cw-icon{width:56px;height:56px;border:1px solid rgba(201,168,76,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:18px;background:rgba(201,168,76,.04);}
+.cw-icon svg{width:24px;height:24px;}
+.cw-icon svg *{stroke:var(--gold);}
+.cw-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--white);line-height:1.1;margin-bottom:8px;}
+.cw-title em{font-style:italic;color:var(--gold);}
+.cw-sub{font-size:11px;font-weight:300;color:var(--muted2);line-height:1.7;max-width:300px;margin-bottom:20px;}
+.cw-prompts{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;max-width:340px;}
+.cwp{background:var(--card);border:1px solid var(--border2);padding:10px;cursor:pointer;text-align:left;transition:border-color .2s;border-radius:4px;}
+.cwp:hover{border-color:rgba(201,168,76,.3);}
+.cwp-lbl{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;margin-bottom:3px;}
+.cwp-text{font-size:10px;font-weight:500;color:var(--text);}
+
+.msg{display:flex;gap:8px;margin-bottom:14px;animation:mIn .25s ease;}
+@keyframes mIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.msg.user{flex-direction:row-reverse;}
+.msg-av{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+.msg-av.apex{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);}
+.msg-av.apex svg{width:11px;height:11px;}
+.msg-av.apex svg *{stroke:var(--gold);}
+.msg-av.user{background:var(--card2);border:1px solid var(--border2);font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--gold);}
+.msg-inner{flex:1;max-width:84%;}
+.msg.user .msg-inner{display:flex;flex-direction:column;align-items:flex-end;}
+.msg-who{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1.5px;color:var(--muted2);text-transform:uppercase;margin-bottom:3px;}
+.msg-bub{padding:10px 13px;font-size:12px;font-weight:300;line-height:1.65;}
+.msg-bub.apex{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.12);border-left:2px solid rgba(201,168,76,.3);color:var(--white);}
+.msg-bub.user{background:var(--card2);border:1px solid var(--border2);color:var(--text);}
+.msg-bub strong{color:var(--gold);font-weight:600;}
+.msg-bub em{color:var(--gold2);font-style:italic;}
+
+.typing{display:flex;gap:8px;margin-bottom:14px;}
+.typing-bub{display:flex;align-items:center;gap:3px;padding:10px 13px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.12);border-left:2px solid rgba(201,168,76,.3);}
+.td{width:5px;height:5px;background:var(--gold);border-radius:50%;opacity:.4;animation:tDot 1.4s ease-in-out infinite;}
+.td:nth-child(2){animation-delay:.2s;}
+.td:nth-child(3){animation-delay:.4s;}
+@keyframes tDot{0%,60%,100%{opacity:.4;transform:translateY(0);}30%{opacity:1;transform:translateY(-3px);}}
+
+.coach-api{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.2);padding:12px;margin-bottom:10px;border-radius:4px;}
+.cap-title{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:5px;}
+.cap-body{font-size:10px;color:var(--muted2);margin-bottom:10px;line-height:1.6;}
+.cap-row{display:flex;gap:6px;}
+.cap-in{flex:1;background:var(--card);border:1px solid var(--border2);color:var(--white);font-family:'DM Mono',monospace;font-size:11px;padding:8px 10px;outline:none;border-radius:4px;}
+.cap-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:var(--bg);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 12px;cursor:pointer;border-radius:4px;}
+
+.chat-wrap{display:flex;align-items:flex-end;gap:8px;background:var(--card);border:1px solid var(--border2);padding:9px 11px;border-radius:8px;}
+.chat-in{flex:1;background:none;border:none;outline:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:400;line-height:1.5;resize:none;min-height:20px;max-height:90px;overflow-y:auto;}
+.chat-in::placeholder{color:var(--muted);}
+.send-btn{width:30px;height:30px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:.4;transition:opacity .2s;flex-shrink:0;border-radius:4px;}
+.send-btn.rdy{opacity:1;}
+.send-btn svg{width:12px;height:12px;}
+.clear-btn{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1px;color:var(--muted);background:none;border:1px solid var(--border);padding:5px 10px;cursor:pointer;text-transform:uppercase;border-radius:3px;margin-left:auto;}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--nav-h) + 10px);left:50%;transform:translateX(-50%) translateY(60px);background:var(--gold);color:var(--bg);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;padding:8px 16px;border-radius:999px;z-index:100;transition:all .3s;pointer-events:none;opacity:0;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* LOADING */
+.loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .4s;}
+.loader-logo{font-family:'Montserrat',sans-serif;font-weight:800;font-size:26px;letter-spacing:8px;color:var(--white);text-transform:uppercase;animation:lPulse 1.5s ease-in-out infinite;}
+.loader-logo span{color:var(--gold);}
+@keyframes lPulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+.loader-bar{width:80px;height:1px;background:var(--border);margin-top:20px;overflow:hidden;}
+.loader-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));animation:lBar 1.2s ease-in-out infinite;}
+@keyframes lBar{0%{width:0;margin-left:0;}60%{width:100%;margin-left:0;}100%{width:0;margin-left:100%;}}
+
+/* ══ ONBOARDING STYLES ══ */
+#onboarding-overlay {
+  position:fixed;inset:0;z-index:800;
+  background:var(--bg);
+  display:none;
+  flex-direction:column;
+  overflow:hidden;
+}
+#onboarding-overlay.visible {
+  display:flex;
+}
+/* Hide left sidebar on mobile - not enough screen space */
+#onboarding-overlay .left {
+  display:none !important;
+}
+/* Main area is just the right panel, fills available space */
+#onboarding-overlay .main {
+  flex:1;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+/* Right panel scrolls */
+#onboarding-overlay .right {
+  flex:1;
+  overflow-y:auto !important;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch !important;
+  padding:20px 16px 40px 16px !important;
+  width:100% !important;
+  position:relative !important;
+  z-index:0 !important;
+}
+#onboarding-overlay #step-complete {
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:60px !important;
+}
+/* Bottom nav stays fixed at bottom, never scrolls away */
+#onboarding-overlay .bottom-nav {
+  flex-shrink:0 !important;
+  position:relative !important;
+  z-index:1 !important;
+  height:auto !important;
+  padding:16px 20px !important;
+  background:var(--surface) !important;
+  border-top:1px solid var(--border) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+}
+#onboarding-overlay .btn-next {
+  position:relative !important;
+  z-index:2 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+#onboarding-overlay .btn-back {
+  position:relative !important;
+  z-index:2 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+/* Topbar inside onboarding */
+#onboarding-overlay .topbar {
+  flex-shrink:0;
+}
+#onboarding-overlay .progress-track {
+  flex-shrink:0;
+}
+/* Make step content look good without sidebar */
+#onboarding-overlay .step-h {
+  font-size:22px !important;
+}
+#onboarding-overlay .option-grid.og-3 {
+  grid-template-columns:1fr 1fr !important;
+}
+/* Scope all onboarding styles inside #onboarding-overlay */
+
+:root {
+  --bg:#070709;
+  --surface:#0b0b10;
+  --card:#0f0f16;
+  --card2:#14141c;
+  --border:#191924;
+  --border2:#252535;
+  --gold:#c9a84c;
+  --gold2:#e0ba6a;
+  --gold3:#f0d090;
+  --white:#ededf5;
+  --muted:#3e3e55;
+  --muted2:#737390;
+  --text:#b8b8cc;
+  --green:#2dd4a0;
+  --red:#e05555;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Montserrat',sans-serif;
+  display:flex;flex-direction:column;
+}
+
+/* GRAIN */
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:999;
+}
+
+/* CURSOR */
+*{cursor:none!important;}
+.cur{width:7px;height:7px;background:var(--gold);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .25s,height .25s;}
+.cur-ring{width:30px;height:30px;border:1px solid rgba(201,168,76,.3);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .1s ease;}
+
+/* TOP BAR */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 48px;border-bottom:1px solid var(--border);
+  background:var(--surface);flex-shrink:0;
+}
+.logo{
+  font-family:'Montserrat',sans-serif;
+  font-weight:800;font-size:12px;letter-spacing:6px;
+  color:var(--white);text-transform:uppercase;
+}
+.logo span{color:var(--gold);}
+.step-counter{
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:2px;color:var(--muted2);
+}
+.step-counter span{color:var(--gold);}
+
+/* PROGRESS BAR */
+.progress-track{
+  height:2px;background:var(--border);flex-shrink:0;
+  position:relative;overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--gold),var(--gold2));
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+
+/* MAIN LAYOUT */
+.main{
+  flex:1;display:flex;overflow:hidden;
+}
+
+/* LEFT PANEL */
+.left{
+  width:380px;flex-shrink:0;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  padding:48px 40px;
+  display:flex;flex-direction:column;
+  justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.left::before{
+  content:'';position:absolute;
+  bottom:-80px;left:-40px;
+  width:280px;height:280px;
+  background:radial-gradient(circle,rgba(201,168,76,.05),transparent 65%);
+  pointer-events:none;
+}
+.left-step-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(80px,10vw,120px);
+  font-weight:300;
+  color:rgba(201,168,76,.08);
+  line-height:1;letter-spacing:-4px;
+  position:absolute;top:32px;right:32px;
+}
+.left-kicker{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:16px;
+}
+.lk-bar{width:24px;height:1px;background:var(--gold);}
+.lk-text{
+  font-family:'DM Mono',monospace;
+  font-size:8px;letter-spacing:2.5px;color:var(--gold);
+  text-transform:uppercase;
+}
+.left-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(28px,3vw,40px);
+  font-weight:300;color:var(--white);
+  line-height:1.1;letter-spacing:-.5px;
+  margin-bottom:12px;
+}
+.left-title em{font-style:italic;color:var(--gold);}
+.left-desc{
+  font-size:12px;font-weight:300;letter-spacing:.3px;
+  color:var(--muted2);line-height:1.8;
+}
+.left-steps{
+  display:flex;flex-direction:column;gap:10px;
+}
+.ls-item{
+  display:flex;align-items:center;gap:12px;
+  padding:8px 0;
+  border-bottom:1px solid var(--border);
+  transition:all .3s;
+}
+.ls-item:last-child{border-bottom:none;}
+.ls-dot{
+  width:6px;height:6px;border-radius:50%;
+  border:1px solid var(--muted);
+  flex-shrink:0;transition:all .3s;
+}
+.ls-item.done .ls-dot{background:var(--green);border-color:var(--green);}
+.ls-item.active .ls-dot{background:var(--gold);border-color:var(--gold);}
+.ls-label{
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:1.5px;color:var(--muted);
+  text-transform:uppercase;transition:color .3s;
+}
+.ls-item.active .ls-label{color:var(--gold);}
+.ls-item.done .ls-label{color:var(--green);}
+
+/* RIGHT PANEL */
+.right{
+  flex:1;overflow-y:auto;
+  padding:48px 56px;
+  scroll-behavior:smooth;
+}
+.right::-webkit-scrollbar{width:4px;}
+.right::-webkit-scrollbar-track{background:transparent;}
+.right::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* STEP */
+.step{
+  display:none;
+  animation:stepIn .35s cubic-bezier(.4,0,.2,1);
+}
+.step.active{display:block;}
+@keyframes stepIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+
+.step-h{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(24px,2.5vw,34px);
+  font-weight:600;color:var(--white);
+  margin-bottom:8px;line-height:1.1;
+}
+.step-sub{
+  font-size:12px;font-weight:300;color:var(--muted2);
+  line-height:1.7;margin-bottom:36px;
+}
+
+/* FIELD */
+.field-group{margin-bottom:24px;}
+.field-label{
+  font-family:'DM Mono',monospace;
+  font-size:8px;letter-spacing:2px;color:var(--muted2);
+  text-transform:uppercase;margin-bottom:8px;display:block;
+}
+.field-input{
+  width:100%;background:var(--card);
+  border:1px solid var(--border2);
+  color:var(--white);
+  font-family:'Montserrat',sans-serif;
+  font-weight:500;font-size:15px;
+  padding:14px 16px;outline:none;
+  transition:border-color .2s;
+  -webkit-appearance:none;
+}
+.field-input:focus{border-color:rgba(201,168,76,.5);}
+.field-input::placeholder{color:var(--muted);font-weight:300;font-size:13px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.field-hint{
+  font-size:10px;color:var(--muted);
+  margin-top:6px;font-weight:300;letter-spacing:.3px;
+}
+
+/* SELECT */
+.field-select{
+  width:100%;background:var(--card);
+  border:1px solid var(--border2);
+  color:var(--white);
+  font-family:'Montserrat',sans-serif;
+  font-weight:500;font-size:14px;
+  padding:14px 16px;outline:none;
+  transition:border-color .2s;
+  -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23737390' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 16px center;
+  background-size:12px;
+  cursor:pointer;
+}
+.field-select:focus{border-color:rgba(201,168,76,.5);}
+.field-select option{background:var(--card2);}
+
+/* OPTION CARDS */
+.option-grid{
+  display:grid;gap:10px;
+  margin-bottom:8px;
+}
+.og-2{grid-template-columns:1fr 1fr;}
+.og-3{grid-template-columns:1fr 1fr 1fr;}
+.og-1{grid-template-columns:1fr;}
+.opt-card{
+  background:var(--card);border:1px solid var(--border2);
+  padding:16px 18px;cursor:pointer;
+  transition:all .2s;position:relative;overflow:hidden;
+  user-select:none;
+}
+.opt-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,var(--gold),transparent);
+  transform:scaleX(0);transform-origin:left;transition:transform .3s;
+}
+.opt-card:hover{border-color:var(--border2);background:var(--card2);}
+.opt-card.selected{
+  border-color:rgba(201,168,76,.5);
+  background:rgba(201,168,76,.06);
+}
+.opt-card.selected::before{transform:scaleX(1);}
+.oc-title{
+  font-size:13px;font-weight:700;color:var(--white);
+  margin-bottom:4px;
+}
+.oc-desc{font-size:10px;font-weight:300;color:var(--muted2);line-height:1.5;}
+.oc-check{
+  position:absolute;top:12px;right:12px;
+  width:16px;height:16px;border-radius:50%;
+  border:1px solid var(--border2);
+  background:transparent;
+  transition:all .2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.opt-card.selected .oc-check{
+  background:var(--gold);border-color:var(--gold);
+}
+.oc-check-inner{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--bg);opacity:0;transition:opacity .2s;
+}
+.opt-card.selected .oc-check-inner{opacity:1;}
+
+/* MULTI-SELECT CHIPS */
+.chip-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+.chip-opt{
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+  padding:8px 14px;border:1px solid var(--border2);
+  color:var(--muted2);background:var(--card);
+  cursor:pointer;transition:all .2s;user-select:none;
+}
+.chip-opt:hover{border-color:var(--border2);color:var(--text);}
+.chip-opt.selected{
+  border-color:rgba(201,168,76,.5);
+  color:var(--gold);background:rgba(201,168,76,.07);
+}
+
+/* RANGE SLIDER */
+.range-wrap{margin-bottom:8px;}
+.range-labels{
+  display:flex;justify-content:space-between;
+  font-family:'DM Mono',monospace;font-size:9px;
+  color:var(--muted);letter-spacing:1px;
+  margin-top:8px;
+}
+input[type=range]{
+  width:100%;-webkit-appearance:none;
+  height:2px;background:var(--border2);
+  outline:none;border-radius:0;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:18px;height:18px;
+  background:var(--gold);border-radius:50%;
+  cursor:pointer;border:2px solid var(--bg);
+  box-shadow:0 0 0 1px var(--gold);
+}
+input[type=range]::-moz-range-thumb{
+  width:16px;height:16px;
+  background:var(--gold);border-radius:50%;
+  cursor:pointer;border:2px solid var(--bg);
+}
+.range-val{
+  font-family:'Cormorant Garamond',serif;
+  font-size:32px;font-weight:600;color:var(--white);
+  text-align:center;margin-bottom:4px;
+}
+.range-val span{color:var(--gold);}
+
+/* DAYS PICKER */
+.days-grid{display:flex;gap:8px;flex-wrap:wrap;}
+.day-btn{
+  width:44px;height:44px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--card);border:1px solid var(--border2);
+  font-family:'DM Mono',monospace;font-size:10px;
+  letter-spacing:1px;color:var(--muted2);
+  cursor:pointer;transition:all .2s;user-select:none;
+}
+.day-btn:hover{border-color:var(--border2);color:var(--text);}
+.day-btn.selected{
+  border-color:rgba(201,168,76,.5);
+  color:var(--gold);background:rgba(201,168,76,.08);
+}
+
+/* TEXTAREA */
+.field-textarea{
+  width:100%;background:var(--card);
+  border:1px solid var(--border2);
+  color:var(--white);
+  font-family:'Montserrat',sans-serif;
+  font-weight:400;font-size:13px;
+  padding:14px 16px;outline:none;
+  transition:border-color .2s;
+  resize:vertical;min-height:100px;line-height:1.7;
+}
+.field-textarea:focus{border-color:rgba(201,168,76,.5);}
+.field-textarea::placeholder{color:var(--muted);font-weight:300;}
+
+/* DIVIDER */
+.divider{
+  height:1px;background:var(--border);
+  margin:28px 0;
+}
+
+/* SUMMARY CARD */
+.summary-grid{display:flex;flex-direction:column;gap:1px;background:var(--border);}
+.sum-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--card);padding:14px 16px;
+}
+.sum-key{
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:1.5px;color:var(--muted2);
+  text-transform:uppercase;
+}
+.sum-val{
+  font-size:13px;font-weight:600;color:var(--white);
+  text-align:right;max-width:60%;
+}
+.sum-val.gold{color:var(--gold);}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 56px;
+  border-top:1px solid var(--border);
+  background:var(--surface);flex-shrink:0;
+}
+.btn-back{
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted2);background:none;border:none;
+  cursor:pointer;transition:color .2s;
+  display:flex;align-items:center;gap:8px;
+}
+.btn-back:hover{color:var(--white);}
+.btn-back svg{width:16px;height:16px;}
+.btn-next{
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--bg);
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border:none;padding:13px 36px;
+  cursor:pointer;transition:all .3s;
+  display:flex;align-items:center;gap:10px;
+}
+.btn-next:hover{
+  box-shadow:0 8px 32px rgba(201,168,76,.25);
+  transform:translateY(-1px);
+}
+.btn-next svg{width:14px;height:14px;}
+.btn-next:disabled{opacity:.4;transform:none;box-shadow:none;cursor:not-allowed;}
+
+/* COMPLETE SCREEN */
+.complete-screen{padding-bottom:40px !important;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;
+  min-height:100%;padding:48px;
+}
+.cs-icon{
+  width:64px;height:64px;margin-bottom:28px;
+  border:1px solid rgba(201,168,76,.3);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.cs-icon svg{width:28px;height:28px;}
+.cs-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:40px;font-weight:300;color:var(--white);
+  line-height:1.1;margin-bottom:12px;letter-spacing:-.5px;
+}
+.cs-title em{font-style:italic;color:var(--gold);}
+.cs-sub{
+  font-size:13px;font-weight:300;color:var(--muted2);
+  line-height:1.8;max-width:400px;margin-bottom:36px;
+}
+.cs-macros{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  width:100%;max-width:400px;margin-bottom:36px;
+}
+.csm-box{
+  background:var(--card);padding:16px 12px;text-align:center;
+}
+.csm-val{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;font-weight:600;color:var(--gold);line-height:1;
+}
+.csm-lbl{
+  font-family:'DM Mono',monospace;
+  font-size:8px;letter-spacing:1.5px;color:var(--muted2);
+  text-transform:uppercase;margin-top:4px;
+}
+.cs-btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:400px;}
+.cs-btn-primary{position:relative !important;z-index:10 !important;touch-action:manipulation !important;
+  font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--bg);
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border:none;padding:15px;
+  cursor:pointer;transition:all .3s;width:100%;
+}
+.cs-btn-primary:hover{box-shadow:0 8px 32px rgba(201,168,76,.25);}
+.cs-btn-secondary{position:relative !important;z-index:10 !important;touch-action:manipulation !important;
+  font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted2);
+  background:var(--card);
+  border:1px solid var(--border2);padding:15px;
+  cursor:pointer;transition:all .3s;width:100%;
+}
+.cs-btn-secondary:hover{color:var(--white);border-color:var(--border2);}
+
+/* RESPONSIVE */
+@media(max-width:800px){
+  .left{display:none;}
+  .topbar{padding:16px 20px;}
+  .right{padding:28px 20px;}
+  .bottom-nav{padding:16px 20px;}
+  .og-3{grid-template-columns:1fr 1fr;}
+  .field-row{grid-template-columns:1fr;}
+  html,body{overflow:auto;}
+  .main{overflow:visible;}
+  .right{overflow:visible;}
+}
+
+</style>
+</head>
+<body>
+
+
+<!-- ONBOARDING OVERLAY -->
+<div id="onboarding-overlay">
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo"><span>APEX</span> Training</div>
+  <div class="step-counter">Step <span id="step-label">1</span> of 9</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-track">
+  <div class="progress-fill" id="progress-fill" style="width:11%"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT PANEL -->
+  <div class="left">
+    <div>
+      <div class="left-step-num" id="left-num">01</div>
+      <div class="left-kicker">
+        <div class="lk-bar"></div>
+        <div class="lk-text" id="left-kicker-text">Getting Started</div>
+      </div>
+      <div class="left-title" id="left-title">Let's build your <em>perfect</em> program.</div>
+      <div class="left-desc" id="left-desc">Answer a few questions and APEX will personalize everything — your program, your macros, your recovery protocol.</div>
+    </div>
+    <div class="left-steps" id="left-steps">
+      <div class="ls-item active" data-step="1"><div class="ls-dot"></div><div class="ls-label">About You</div></div>
+      <div class="ls-item" data-step="2"><div class="ls-dot"></div><div class="ls-label">Your Goals</div></div>
+      <div class="ls-item" data-step="3"><div class="ls-dot"></div><div class="ls-label">Experience</div></div>
+      <div class="ls-item" data-step="4"><div class="ls-dot"></div><div class="ls-label">Priority Muscles</div></div>
+      <div class="ls-item" data-step="5"><div class="ls-dot"></div><div class="ls-label">Equipment</div></div>
+      <div class="ls-item" data-step="6"><div class="ls-dot"></div><div class="ls-label">Schedule</div></div>
+      <div class="ls-item" data-step="7"><div class="ls-dot"></div><div class="ls-label">Injuries</div></div>
+      <div class="ls-item" data-step="8"><div class="ls-dot"></div><div class="ls-label">Nutrition</div></div>
+      <div class="ls-item" data-step="9"><div class="ls-dot"></div><div class="ls-label">Review</div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right" id="right-panel">
+
+    <!-- STEP 1: About You -->
+    <div class="step active" id="step-1">
+      <div class="step-h">Tell us about yourself.</div>
+      <div class="step-sub">This personalizes your program, macro targets, and coaching recommendations.</div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">First Name</label>
+          <input class="field-input" type="text" placeholder="Your name" id="f-name">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Age</label>
+          <input class="field-input" type="number" placeholder="Age" id="f-age" min="16" max="80">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Biological Sex</label>
+        <div class="option-grid og-2">
+          <div class="opt-card" onclick="selectOpt(this,'f-sex','male')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Male</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-sex','female')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Female</div>
+          </div>
+        </div>
+        <div class="field-hint">Used to calculate accurate TDEE and macro targets.</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Height</label>
+          <select class="field-select" id="f-height">
+            <option value="" disabled selected>Select height</option>
+            <option>5'0"</option><option>5'1"</option><option>5'2"</option>
+            <option>5'3"</option><option>5'4"</option><option>5'5"</option>
+            <option>5'6"</option><option>5'7"</option><option>5'8"</option>
+            <option>5'9"</option><option>5'10"</option><option>5'11"</option>
+            <option>6'0"</option><option>6'1"</option><option>6'2"</option>
+            <option>6'3"</option><option>6'4"</option><option>6'5"</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Current Weight (lbs)</label>
+          <input class="field-input" type="number" placeholder="Current weight" id="f-weight" min="80" max="500">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Activity Outside the Gym</label>
+        <div class="option-grid og-3">
+          <div class="opt-card" onclick="selectOpt(this,'f-activity','sedentary')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Sedentary</div>
+            <div class="oc-desc">Desk job, mostly sitting</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-activity','moderate')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Moderate</div>
+            <div class="oc-desc">On feet sometimes</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-activity','active')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Very Active</div>
+            <div class="oc-desc">Physical job or lots of movement</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: Goals -->
+    <div class="step" id="step-2">
+      <div class="step-h">What's your primary goal?</div>
+      <div class="step-sub">This determines your program structure, rep ranges, and nutrition targets. Be honest — there's no wrong answer.</div>
+
+      <div class="field-group">
+        <div class="option-grid og-1" style="gap:10px">
+          <div class="opt-card" onclick="selectOpt(this,'f-goal','shred')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Get Shredded — Fat Loss Priority</div>
+            <div class="oc-desc">Lose body fat while preserving muscle. Caloric deficit, higher frequency, metabolic conditioning.</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-goal','muscle')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Build Muscle — Hypertrophy Priority</div>
+            <div class="oc-desc">Maximize muscle size through science-backed volume, frequency, and stretch-loaded protocols.</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-goal','strength')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Get Stronger — Strength Priority</div>
+            <div class="oc-desc">Move more weight. Heavy compound focus, progressive overload, longer rest periods.</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-goal','powerbuilding')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Powerbuilding — Strength + Size</div>
+            <div class="oc-desc">Heavy compounds first, hypertrophy accessories after. The best of both worlds.</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-goal','athletic')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Athletic Performance</div>
+            <div class="oc-desc">Explosive power, speed, and conditioning. Built for real-world performance.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group">
+        <label class="field-label">Goal Weight (lbs) — Optional</label>
+        <input class="field-input" type="number" placeholder="Goal weight" id="f-goalweight" min="80" max="500">
+        <div class="field-hint">If cutting or bulking, enter your target weight.</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">How Aggressive?</label>
+        <div class="option-grid og-3">
+          <div class="opt-card" onclick="selectOpt(this,'f-aggression','conservative')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Conservative</div>
+            <div class="oc-desc">Slow and steady. Preserve every ounce of muscle.</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-aggression','moderate')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Moderate</div>
+            <div class="oc-desc">Good balance of speed and muscle retention.</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-aggression','aggressive')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Aggressive</div>
+            <div class="oc-desc">Faster results. Some muscle sacrifice accepted.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: Experience -->
+    <div class="step" id="step-3">
+      <div class="step-h">How long have you been training?</div>
+      <div class="step-sub">Your experience level determines starting weights, volume tolerance, and how quickly we progress you.</div>
+
+      <div class="field-group">
+        <div class="option-grid og-1" style="gap:10px">
+          <div class="opt-card" onclick="selectOpt(this,'f-level','beginner')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Beginner — Under 1 Year</div>
+            <div class="oc-desc">Still learning movement patterns. Rapid strength gains still available. Foundation-first approach.</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-level','intermediate')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Intermediate — 1 to 4 Years</div>
+            <div class="oc-desc">Solid foundation. Consistent training history. Ready for structured periodization.</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-level','advanced')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Advanced — 4+ Years</div>
+            <div class="oc-desc">High volume tolerance. Needs more sophisticated programming to continue progressing.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group">
+        <label class="field-label">Training Time of Day</label>
+        <div class="option-grid og-3">
+          <div class="opt-card" onclick="selectOpt(this,'f-time','morning')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Morning</div>
+            <div class="oc-desc">5am – 10am</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-time','afternoon')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Afternoon</div>
+            <div class="oc-desc">11am – 4pm</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-time','evening')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Evening</div>
+            <div class="oc-desc">5pm – 10pm</div>
+          </div>
+        </div>
+        <div class="field-hint">Affects meal timing recommendations and pre/post-workout nutrition.</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Do you train fasted?</label>
+        <div class="option-grid og-2">
+          <div class="opt-card" onclick="selectOpt(this,'f-fasted','yes')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Yes — I train fasted</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-fasted','no')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">No — I eat before training</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: Priority Muscles -->
+    <div class="step" id="step-4">
+      <div class="step-h">Which muscles are your priority?</div>
+      <div class="step-sub">APEX will train these muscle groups twice per week using higher volume and stretch-loaded protocols. Select up to 3.</div>
+
+      <div class="field-group">
+        <label class="field-label">Priority Muscles (up to 3)</label>
+        <div class="chip-grid" id="priority-chips">
+          <div class="chip-opt" onclick="toggleChip(this,'chest')">Chest</div>
+          <div class="chip-opt" onclick="toggleChip(this,'back')">Back</div>
+          <div class="chip-opt" onclick="toggleChip(this,'shoulders')">Shoulders</div>
+          <div class="chip-opt" onclick="toggleChip(this,'biceps')">Biceps</div>
+          <div class="chip-opt" onclick="toggleChip(this,'triceps')">Triceps</div>
+          <div class="chip-opt" onclick="toggleChip(this,'quads')">Quads</div>
+          <div class="chip-opt" onclick="toggleChip(this,'glutes')">Glutes</div>
+          <div class="chip-opt" onclick="toggleChip(this,'hamstrings')">Hamstrings</div>
+          <div class="chip-opt" onclick="toggleChip(this,'abs')">Abs</div>
+          <div class="chip-opt" onclick="toggleChip(this,'calves')">Calves</div>
+        </div>
+        <div class="field-hint">Selected: <span id="priority-count" style="color:var(--gold)">0 / 3</span></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group">
+        <label class="field-label">Weakest Area (optional)</label>
+        <div class="chip-grid">
+          <div class="chip-opt" onclick="selectOpt(this,'f-weak','chest')">Chest</div>
+          <div class="chip-opt" onclick="selectOpt(this,'f-weak','back')">Back</div>
+          <div class="chip-opt" onclick="selectOpt(this,'f-weak','shoulders')">Shoulders</div>
+          <div class="chip-opt" onclick="selectOpt(this,'f-weak','arms')">Arms</div>
+          <div class="chip-opt" onclick="selectOpt(this,'f-weak','legs')">Legs</div>
+          <div class="chip-opt" onclick="selectOpt(this,'f-weak','core')">Core</div>
+        </div>
+        <div class="field-hint">APEX will add unilateral and corrective work for this area.</div>
+      </div>
+    </div>
+
+    <!-- STEP 5: Equipment -->
+    <div class="step" id="step-5">
+      <div class="step-h">What equipment do you have access to?</div>
+      <div class="step-sub">APEX builds programs around what you actually have available. Select everything that applies.</div>
+
+      <div class="field-group">
+        <label class="field-label">Equipment Access</label>
+        <div class="chip-grid" id="equipment-chips">
+          <div class="chip-opt" onclick="toggleChip(this,'full-gym')">Full Commercial Gym</div>
+          <div class="chip-opt" onclick="toggleChip(this,'barbells')">Barbells</div>
+          <div class="chip-opt" onclick="toggleChip(this,'dumbbells')">Dumbbells</div>
+          <div class="chip-opt" onclick="toggleChip(this,'cables')">Cable Machines</div>
+          <div class="chip-opt" onclick="toggleChip(this,'machines')">Weight Machines</div>
+          <div class="chip-opt" onclick="toggleChip(this,'pit-shark')">Pit Shark / Belt Squat</div>
+          <div class="chip-opt" onclick="toggleChip(this,'smith')">Smith Machine</div>
+          <div class="chip-opt" onclick="toggleChip(this,'pullup-bar')">Pull-Up Bar</div>
+          <div class="chip-opt" onclick="toggleChip(this,'dip-bars')">Dip Bars</div>
+          <div class="chip-opt" onclick="toggleChip(this,'sled')">Sled / Prowler</div>
+          <div class="chip-opt" onclick="toggleChip(this,'trap-bar')">Trap Bar</div>
+          <div class="chip-opt" onclick="toggleChip(this,'bands')">Resistance Bands</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group">
+        <label class="field-label">Recovery Tools Available</label>
+        <div class="chip-grid" id="recovery-chips">
+          <div class="chip-opt" onclick="toggleChip(this,'cold-plunge')">Cold Plunge</div>
+          <div class="chip-opt" onclick="toggleChip(this,'cryo')">Cryotherapy</div>
+          <div class="chip-opt" onclick="toggleChip(this,'sauna')">Traditional Sauna</div>
+          <div class="chip-opt" onclick="toggleChip(this,'infrared')">Infrared Sauna</div>
+          <div class="chip-opt" onclick="toggleChip(this,'steam')">Steam Room</div>
+          <div class="chip-opt" onclick="toggleChip(this,'compression')">Compression Gear</div>
+          <div class="chip-opt" onclick="toggleChip(this,'epsom')">Epsom Salt Bath</div>
+          <div class="chip-opt" onclick="toggleChip(this,'massage')">Massage / Gun</div>
+        </div>
+        <div class="field-hint">APEX recovery protocols are customized to what you have access to.</div>
+      </div>
+    </div>
+
+    <!-- STEP 6: Schedule -->
+    <div class="step" id="step-6">
+      <div class="step-h">Build your training schedule.</div>
+      <div class="step-sub">Select which days you want to train. APEX will structure your program around your availability.</div>
+
+      <div class="field-group">
+        <label class="field-label">Training Days</label>
+        <div class="days-grid" id="days-grid">
+          <div class="day-btn" onclick="toggleDay(this,'Mon')">Mon</div>
+          <div class="day-btn" onclick="toggleDay(this,'Tue')">Tue</div>
+          <div class="day-btn" onclick="toggleDay(this,'Wed')">Wed</div>
+          <div class="day-btn" onclick="toggleDay(this,'Thu')">Thu</div>
+          <div class="day-btn" onclick="toggleDay(this,'Fri')">Fri</div>
+          <div class="day-btn" onclick="toggleDay(this,'Sat')">Sat</div>
+          <div class="day-btn" onclick="toggleDay(this,'Sun')">Sun</div>
+        </div>
+        <div class="field-hint">Selected: <span id="days-count" style="color:var(--gold)">0 days</span></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group">
+        <label class="field-label">Session Length Target</label>
+        <div class="option-grid og-3">
+          <div class="opt-card" onclick="selectOpt(this,'f-duration','45')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">45 min</div>
+            <div class="oc-desc">Efficient. High intensity, lower volume.</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-duration','60')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">60–75 min</div>
+            <div class="oc-desc">Optimal range per research.</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-duration','90')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">90+ min</div>
+            <div class="oc-desc">High volume. Full sessions.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Preferred Training Time</label>
+        <select class="field-select" id="f-train-time">
+          <option value="" disabled selected>Select time</option>
+          <option>5:00 AM</option><option>6:00 AM</option><option>7:00 AM</option>
+          <option>8:00 AM</option><option>9:00 AM</option><option>10:00 AM</option>
+          <option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option>
+          <option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option>
+          <option>5:00 PM</option><option>6:00 PM</option><option>7:00 PM</option>
+          <option>8:00 PM</option><option>9:00 PM</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- STEP 7: Injuries -->
+    <div class="step" id="step-7">
+      <div class="step-h">Any injuries or limitations?</div>
+      <div class="step-sub">APEX modifies programming around your body. Be specific — this is how we keep you training safely and consistently.</div>
+
+      <div class="field-group">
+        <label class="field-label">Current Injuries or Limitations</label>
+        <div class="chip-grid" id="injury-chips">
+          <div class="chip-opt" onclick="toggleChip(this,'lower-back')">Lower Back</div>
+          <div class="chip-opt" onclick="toggleChip(this,'herniated-disc')">Herniated Disc</div>
+          <div class="chip-opt" onclick="toggleChip(this,'shoulder')">Shoulder</div>
+          <div class="chip-opt" onclick="toggleChip(this,'rotator-cuff')">Rotator Cuff</div>
+          <div class="chip-opt" onclick="toggleChip(this,'knee')">Knee</div>
+          <div class="chip-opt" onclick="toggleChip(this,'hip')">Hip</div>
+          <div class="chip-opt" onclick="toggleChip(this,'elbow')">Elbow / Tennis Elbow</div>
+          <div class="chip-opt" onclick="toggleChip(this,'wrist')">Wrist</div>
+          <div class="chip-opt" onclick="toggleChip(this,'neck')">Neck / Cervical</div>
+          <div class="chip-opt" onclick="toggleChip(this,'none')">No Injuries</div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Additional Details (optional)</label>
+        <textarea class="field-textarea" id="f-injury-notes" placeholder="e.g. L4-L5 herniation managed with McKenzie exercises. Cleared for squats and deadlifts. Avoid heavy overhead pressing..."></textarea>
+        <div class="field-hint">The more specific you are, the better APEX can program around your limitations.</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Cleared for Heavy Compound Lifting?</label>
+        <div class="option-grid og-2">
+          <div class="opt-card" onclick="selectOpt(this,'f-cleared','yes')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Yes — Fully cleared</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-cleared','modified')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Modified — With limitations</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 8: Nutrition -->
+    <div class="step" id="step-8">
+      <div class="step-h">Set your nutrition targets.</div>
+      <div class="step-sub">APEX calculates your TDEE and macro targets based on your stats and goals. You can adjust these any time.</div>
+
+      <div class="field-group">
+        <label class="field-label">Calculated Daily Calories</label>
+        <div class="range-val" id="cal-display"><span id="cal-val">2,400</span> cal</div>
+        <div class="range-wrap">
+          <input type="range" id="cal-range" min="1400" max="4000" step="50" value="2400" oninput="updateCals(this.value)">
+          <div class="range-labels"><span>1,400</span><span>2,700 optimal</span><span>4,000</span></div>
+        </div>
+        <div class="field-hint" id="cal-hint">Based on your stats: Moderate activity, cut target. Adjust if needed.</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group">
+        <label class="field-label">Dietary Restrictions</label>
+        <div class="chip-grid" id="diet-chips">
+          <div class="chip-opt" onclick="toggleChip(this,'none')">No Restrictions</div>
+          <div class="chip-opt" onclick="toggleChip(this,'no-dairy')">No Dairy</div>
+          <div class="chip-opt" onclick="toggleChip(this,'no-gluten')">No Gluten</div>
+          <div class="chip-opt" onclick="toggleChip(this,'no-pork')">No Pork</div>
+          <div class="chip-opt" onclick="toggleChip(this,'no-fish')">No Fish / Seafood</div>
+          <div class="chip-opt" onclick="toggleChip(this,'vegetarian')">Vegetarian</div>
+          <div class="chip-opt" onclick="toggleChip(this,'vegan')">Vegan</div>
+          <div class="chip-opt" onclick="toggleChip(this,'halal')">Halal</div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Cooking Style</label>
+        <div class="option-grid og-2">
+          <div class="opt-card" onclick="selectOpt(this,'f-cooking','cook')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">I cook most meals</div>
+            <div class="oc-desc">APEX gives full recipes and meal prep plans.</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-cooking','simple')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Keep it simple</div>
+            <div class="oc-desc">Basic meals, minimal prep. Practical approach.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Protein Supplement?</label>
+        <div class="option-grid og-2">
+          <div class="opt-card" onclick="selectOpt(this,'f-supps','yes')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">Yes — I use whey protein</div>
+          </div>
+          <div class="opt-card" onclick="selectOpt(this,'f-supps','no')">
+            <div class="oc-check"><div class="oc-check-inner"></div></div>
+            <div class="oc-title">No — Food only</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 9: Review -->
+    <div class="step" id="step-9">
+      <div class="step-h">Your program is <em style="font-family:'Cormorant Garamond',serif;color:var(--gold);font-style:italic;">ready.</em></div>
+      <div class="step-sub">Review your profile before APEX generates your personalized program.</div>
+      <div class="summary-grid" id="summary-grid"></div>
+    </div>
+
+    <!-- COMPLETE SCREEN -->
+    <div id="step-complete" style="display:none;position:fixed;inset:0;z-index:900;background:#070709;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;">
+  <div style="width:56px;height:56px;border:1px solid rgba(201,168,76,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+    <svg viewBox="0 0 28 28" fill="none" width="24" height="24"><polyline points="4,14 10,20 24,8" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#ededf5;line-height:1.1;margin-bottom:12px;">Welcome to <em style="font-style:italic;color:#c9a84c">APEX.</em></div>
+  <div style="font-size:13px;font-weight:300;color:#737390;line-height:1.8;margin-bottom:32px;max-width:300px;">Your program has been built. Your macros are set. Let's train.</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#191924;width:100%;max-width:360px;margin-bottom:40px;">
+    <div style="background:#0f0f16;padding:14px 8px;text-align:center;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#c9a84c;line-height:1;" id="cs-cal">2,400</div>
+      <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1px;color:#737390;text-transform:uppercase;margin-top:3px;">Calories</div>
+    </div>
+    <div style="background:#0f0f16;padding:14px 8px;text-align:center;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#c9a84c;line-height:1;" id="cs-pro">225g</div>
+      <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1px;color:#737390;text-transform:uppercase;margin-top:3px;">Protein</div>
+    </div>
+    <div style="background:#0f0f16;padding:14px 8px;text-align:center;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:#c9a84c;line-height:1;" id="cs-prog">APEX</div>
+      <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1px;color:#737390;text-transform:uppercase;margin-top:3px;">Program</div>
+    </div>
+  </div>
+  <button onclick="completeOnboardingAndLaunch()" style="width:100%;max-width:360px;background:linear-gradient(135deg,#c9a84c,#e0ba6a);border:none;color:#070709;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:18px;margin-bottom:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;" onclick="completeOnboardingAndLaunch()">
+    OPEN APEX TRAINING
+  </button>
+  <button style="width:100%;max-width:360px;background:none;border:1px solid #252535;color:#737390;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:18px;cursor:pointer;touch-action:manipulation;" onclick="completeOnboardingAndLaunch()">
+    CHAT WITH AI COACH FIRST
+  </button>
+</div>
+
+  </div><!-- end right -->
+</div><!-- end main -->
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="btn-back" id="back-btn" onclick="prevStep()" style="opacity:0;pointer-events:none">
+    <svg viewBox="0 0 16 16" fill="none"><path d="M10 3 L5 8 L10 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Back
+  </button>
+  <button class="btn-next" id="next-btn" onclick="nextStep()">
+    Continue
+    <svg viewBox="0 0 14 14" fill="none"><path d="M4 2 L9 7 L4 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+  </button>
+</div>
+</div>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-logo"><span>APEX</span></div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar" id="app-topbar">
+  <div class="tb-logo"><span>APEX</span></div>
+  <div class="tb-profile">
+    <div class="tb-av" id="tb-av">A</div>
+    <div>
+      <div class="tb-name" id="tb-name">Athlete</div>
+      <div class="tb-goal" id="tb-goal">APEX</div>
+    </div>
+  </div>
+</div>
+
+<!-- APP BODY -->
+<div class="app-body" id="app-body">
+
+  <!-- DASHBOARD -->
+  <div class="screen active" id="s-dash">
+    <div style="padding:20px 16px 14px;background:linear-gradient(180deg,rgba(201,168,76,.04),transparent);border-bottom:1px solid var(--border);">
+      <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--muted2);text-transform:uppercase;margin-bottom:4px;" id="d-greet">Good evening,</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--white);line-height:1;" id="d-name">Welcome to <em style="font-style:italic;color:var(--gold)">APEX.</em></div>
+      <div style="font-size:11px;font-weight:300;color:var(--muted2);margin-top:4px;" id="d-sub">Start logging to unlock your dashboard.</div>
+    </div>
+    <div class="pg-body">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-val" style="color:var(--gold2)" id="ds-sess">0</div><div class="stat-lbl">Sessions</div></div>
+        <div class="stat-box"><div class="stat-val" style="color:var(--gold)" id="ds-prs">0</div><div class="stat-lbl">PRs</div></div>
+        <div class="stat-box"><div class="stat-val" style="color:var(--green)" id="ds-wt">—</div><div class="stat-lbl">Lbs</div></div>
+        <div class="stat-box"><div class="stat-val" style="color:var(--gold2)" id="ds-wk">W6</div><div class="stat-lbl">Week</div></div>
+      </div>
+      <div class="today-card">
+        <div class="today-bar"></div>
+        <div class="today-body">
+          <div class="today-lbl">Today's Session</div>
+          <div class="today-title" id="d-today-title">Ready to Train</div>
+          <div class="today-sub" id="d-today-sub">Tap Workout to begin logging.</div>
+          <button class="go-btn" onclick="goTo('workout')">Open Workout &nbsp;›</button>
+        </div>
+      </div>
+      <div class="qa-grid">
+        <div class="qa-card" onclick="goTo('nutrition')">
+          <div class="qa-icon"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="1" width="9" height="13" rx=".5"/><line x1="5" y1="6" x2="9" y2="6"/><line x1="5" y1="9" x2="8" y2="9"/><rect x="10" y="10" width="6" height="7" rx=".5"/><line x1="13" y1="10" x2="13" y2="8"/></svg></div>
+          <div class="qa-title">Log Nutrition</div>
+          <div class="qa-desc">Track today's meals</div>
+        </div>
+        <div class="qa-card" onclick="goTo('coach')">
+          <div class="qa-icon"><svg viewBox="0 0 18 18" fill="none"><circle cx="7" cy="5" r="3"/><path d="M1 15c0-4 2.7-7 6-7s6 3 6 7" stroke-linecap="round"/><circle cx="14" cy="4" r="2" opacity=".5"/><line x1="14" y1="2" x2="14" y2="6" stroke-linecap="round"/><line x1="12" y1="4" x2="16" y2="4" stroke-linecap="round"/></svg></div>
+          <div class="qa-title">Ask Coach</div>
+          <div class="qa-desc">AI coaching advice</div>
+        </div>
+        <div class="qa-card" onclick="goTo('progress')">
+          <div class="qa-icon"><svg viewBox="0 0 18 18" fill="none"><polyline points="1,14 6,9 10,12 17,4" stroke-linecap="round" stroke-linejoin="round"/><polyline points="13,4 17,4 17,8" stroke-linecap="round"/></svg></div>
+          <div class="qa-title">Log Weight</div>
+          <div class="qa-desc">Track progress</div>
+        </div>
+        <div class="qa-card" onclick="goTo('workout')">
+          <div class="qa-icon"><svg viewBox="0 0 18 18" fill="none"><line x1="3" y1="9" x2="15" y2="9"/><rect x="1" y="7" width="3" height="4" rx=".3"/><rect x="14" y="7" width="3" height="4" rx=".3"/><rect x="4" y="6" width="2" height="6" rx=".3"/><rect x="12" y="6" width="2" height="6" rx=".3"/></svg></div>
+          <div class="qa-title">Train Now</div>
+          <div class="qa-desc">Open program</div>
+        </div>
+      </div>
+      <div class="coach-teaser" onclick="goTo('coach')">
+        <div class="ct-av"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke-linecap="round"/></svg></div>
+        <div>
+          <div class="ct-title">APEX Coach is online</div>
+          <div class="ct-sub">Ask anything about training, nutrition, or recovery.</div>
+        </div>
+        <div style="margin-left:auto;color:var(--gold);font-size:16px;">›</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORKOUT -->
+  <div class="screen" id="s-workout">
+    <div class="week-strip" id="week-strip"></div>
+    <div class="day-tabs" id="day-tabs"></div>
+    <div class="rx-bar">
+      <div class="rx-title" id="rx-title">MONDAY — CHEST · TRICEPS · ABS</div>
+      <div class="rx-chips">
+        <div class="rx-chip" id="rx-sets">3×8</div>
+        <div class="rx-chip" id="rx-pct">87%</div>
+        <div class="rx-chip" id="rx-rpe">RPE 8</div>
+      </div>
+    </div>
+    <div id="workout-content" style="padding-bottom:16px;"></div>
+  </div>
+
+  <!-- NUTRITION -->
+  <div class="screen" id="s-nutrition">
+    <div class="nut-day-toggle">
+      <button class="ndt on" onclick="setDayType('train',this)">Training Day</button>
+      <button class="ndt" onclick="setDayType('rest',this)">Rest Day</button>
+    </div>
+    <div class="macro-row" style="margin-bottom:0;">
+      <div class="mr-box"><div class="mr-val" style="color:var(--gold)" id="nm-cal">2,400</div><div class="mr-lbl">Calories</div></div>
+      <div class="mr-box"><div class="mr-val" style="color:#8faabf" id="nm-pro">225g</div><div class="mr-lbl">Protein</div></div>
+      <div class="mr-box"><div class="mr-val" style="color:var(--gold3,#f0d090)" id="nm-carb">210g</div><div class="mr-lbl">Carbs</div></div>
+      <div class="mr-box"><div class="mr-val" style="color:#c49a6c" id="nm-fat">65g</div><div class="mr-lbl">Fat</div></div>
+    </div>
+    <div id="nutrition-content" style="padding:10px 0 16px;"></div>
+  </div>
+
+  <div class="screen coach-screen" id="s-coach"></div>
+
+  <!-- PROGRESS -->
+  <div class="screen" id="s-progress">
+    <div class="pg-head">
+      <div class="pg-kicker"><div class="pg-bar"></div><div class="pg-tag">Progress</div></div>
+      <div class="pg-title">Your <em>Journey</em></div>
+    </div>
+    <div class="pg-body">
+      <div class="sec-card">
+        <div class="sc-head"><div class="sc-title">Weight Log</div><div class="sc-tag">Wed Mornings</div></div>
+        <div class="sc-body">
+          <div class="wi-row">
+            <input class="wi-in" type="number" id="wi-lbs" placeholder="Weight (lbs)" step="0.1" min="80" max="500">
+            <input class="wi-in" type="date" id="wi-date" style="max-width:130px;">
+            <button class="wi-btn" onclick="logWt()">Log</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="wt">
+              <thead><tr><th>Date</th><th>Weight</th><th>Change</th><th>vs Start</th><th></th></tr></thead>
+              <tbody id="wt-body"><tr><td colspan="5" style="color:var(--muted);font-style:italic;font-size:11px;padding:14px 10px;">No weigh-ins yet.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="sec-card">
+        <div class="sc-head"><div class="sc-title">Personal Records</div><div class="sc-tag" id="pr-lbl">0 PRs</div></div>
+        <div class="sc-body"><div class="pr-grid" id="pr-grid"><div style="color:var(--muted);font-size:11px;font-style:italic;">Log workouts to track PRs.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end app-body -->
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="app-nav">
+  <button class="bn on" id="bn-dash" onclick="goTo('dash')">
+    <svg viewBox="0 0 20 20" fill="none" width="19" height="19"><rect x="2" y="2" width="7" height="7" rx=".5" stroke-width="1.2"/><rect x="11" y="2" width="7" height="7" rx=".5" stroke-width="1.2"/><rect x="2" y="11" width="7" height="7" rx=".5" stroke-width="1.2"/><rect x="11" y="11" width="7" height="7" rx=".5" stroke-width="1.2"/></svg>
+    <div class="bn-lbl">Home</div>
+  </button>
+  <button class="bn" id="bn-workout" onclick="goTo('workout')">
+    <svg viewBox="0 0 20 20" fill="none" width="19" height="19"><line x1="4" y1="10" x2="16" y2="10" stroke-width="1.2"/><rect x="2" y="8" width="3" height="4" rx=".3" stroke-width="1.2"/><rect x="15" y="8" width="3" height="4" rx=".3" stroke-width="1.2"/><rect x="5" y="7" width="2" height="6" rx=".3" stroke-width="1.2"/><rect x="13" y="7" width="2" height="6" rx=".3" stroke-width="1.2"/></svg>
+    <div class="bn-lbl">Workout</div>
+  </button>
+  <button class="bn" id="bn-nutrition" onclick="goTo('nutrition')">
+    <svg viewBox="0 0 20 20" fill="none" width="19" height="19"><rect x="3" y="2" width="10" height="14" rx=".5" stroke-width="1.2"/><line x1="6" y1="7" x2="10" y2="7" stroke-width="1.2"/><line x1="6" y1="10" x2="9" y2="10" stroke-width="1.2"/><rect x="11" y="11" width="6" height="7" rx=".5" stroke-width="1.2"/><line x1="14" y1="11" x2="14" y2="9" stroke-width="1.2"/></svg>
+    <div class="bn-lbl">Nutrition</div>
+  </button>
+  <button class="bn" id="bn-coach" onclick="goTo('coach')">
+    <svg viewBox="0 0 20 20" fill="none" width="19" height="19"><circle cx="10" cy="7" r="3.5" stroke-width="1.2"/><path d="M3 18c0-4.4 3.1-8 7-8s7 3.6 7 8" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <div class="bn-lbl">Coach</div>
+  </button>
+  <button class="bn" id="bn-progress" onclick="goTo('progress')">
+    <svg viewBox="0 0 20 20" fill="none" width="19" height="19"><polyline points="2,16 7,10 11,13 18,5" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14,5 18,5 18,9" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <div class="bn-lbl">Progress</div>
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ DATA ══
+const WEEKS=[
+  {w:6,name:'Build',pct:'87%',sets:3,reps:'5-6',rpe:'8'},
+  {w:7,name:'Build',pct:'90%',sets:4,reps:'5',rpe:'8-9'},
+  {w:8,name:'Overload',pct:'92%',sets:4,reps:'4-5',rpe:'9'},
+  {w:9,name:'Deload',pct:'60%',sets:2,reps:'6-8',rpe:'5-6'},
+];
+const EXERCISES=[
+  {id:'bench',day:'mon',name:'Barbell Bench Press',bar:'#c9a84c',note:'Strength anchor. Build back up post-injury.',isMain:true,sets:4,reps:'4-6'},
+  {id:'dips',day:'mon',name:'Weighted Dips',bar:'#e0ba6a',note:'Chest-forward lean. Lower pec + tricep.',sets:3,reps:'8-10'},
+  {id:'inclinedb',day:'mon',name:'Incline DB Press',bar:'#e0ba6a',note:'30° angle. Clavicular pec focus.',sets:3,reps:'10-12',stretch:true},
+  {id:'inclinecablefly',day:'mon',name:'Incline Cable Fly',bar:'#a0b8c8',note:'Stretch-position loading. Highest hypertrophy stimulus.',sets:3,reps:'12-15',stretch:true},
+  {id:'ohcabletri',day:'mon',name:'Overhead Cable Tricep Extension',bar:'#a0b8c8',note:'Long head under full stretch.',sets:3,reps:'12-15',stretch:true},
+  {id:'ropepushdown',day:'mon',name:'Rope Pushdown',bar:'#252535',note:'Lateral head pump finisher.',sets:2,reps:'15'},
+  {id:'mcgillcurl',day:'mon',name:'McGill Curl-Up',bar:'#8a7aaa',note:'Spine neutral. No spinal flexion. McGill Big 3.',sets:3,reps:'8-10',spine:true},
+  {id:'deadbug',day:'mon',name:'Dead Bug',bar:'#8a7aaa',note:'Opposite arm/leg. Lower back flat. Anti-extension.',sets:3,reps:'8/side',spine:true},
+  {id:'deadlift',day:'tue',name:'Conventional Deadlift',bar:'#c9a84c',note:'Brace hard. 4-5 min rest. Waist trimmer on.',isMain:true,sets:3,reps:'3-5'},
+  {id:'pullups',day:'tue',name:'Weighted Pull-Ups',bar:'#e0ba6a',note:'~117% lat MVC. Full hang to chin-over-bar.',sets:4,reps:'6-8'},
+  {id:'bbrow',day:'tue',name:'Barbell / DB Row',bar:'#e0ba6a',note:'Row to lower chest. Mid-back and rhomboids.',sets:3,reps:'8-10'},
+  {id:'pulldown',day:'tue',name:'Cable Lat Pulldown',bar:'#252535',note:'Volume finisher. Scapulae depressed.',sets:3,reps:'10-12'},
+  {id:'reardelt',day:'tue',name:'Rear Delt Cable Fly',bar:'#252535',note:'Balances pressing. Critical for shoulder health.',sets:2,reps:'15'},
+  {id:'inclinecurl',day:'tue',name:'Incline DB Curl',bar:'#a0b8c8',note:'Long head stretch. Highest bicep growth stimulus.',sets:3,reps:'10-12',stretch:true},
+  {id:'bbcurl',day:'tue',name:'Barbell Curl',bar:'#e0ba6a',note:'Mass builder. Full supination at top.',sets:3,reps:'10-12'},
+  {id:'hammercurl',day:'tue',name:'Hammer Curl',bar:'#e0ba6a',note:'Brachialis thickness. Pushes bicep peak up.',sets:2,reps:'12-15'},
+  {id:'sideplank',day:'tue',name:'Side Plank',bar:'#8a7aaa',note:'McGill Big 3. Lateral core. 30-45 sec per side.',sets:3,reps:'30-45s',spine:true},
+  {id:'birddog',day:'tue',name:'Bird Dog',bar:'#8a7aaa',note:'8-10 sec hold per rep. McGill gold standard.',sets:3,reps:'8/side',spine:true},
+  {id:'squat',day:'thu',name:'Barbell Back Squat',bar:'#c9a84c',note:'Waist trimmer on. Brace before unracking.',isMain:true,sets:3,reps:'5'},
+  {id:'pitshark',day:'thu',name:'Pit Shark Belt Squat',bar:'#e0ba6a',note:'No spinal compression. Great for your disc.',sets:4,reps:'10-12'},
+  {id:'hipthrust',day:'thu',name:'Barbell Hip Thrust',bar:'#c49a6c',note:'1-sec squeeze. Main glute event.',sets:4,reps:'8-10'},
+  {id:'hacksquat',day:'thu',name:'Hack Squat',bar:'#e0ba6a',note:'Feet low and narrow. VMO focus.',sets:3,reps:'12'},
+  {id:'legext',day:'thu',name:'Leg Extension',bar:'#252535',note:'3-sec eccentric. Rectus femoris isolation.',sets:3,reps:'15'},
+  {id:'rdl',day:'thu',name:'Romanian Deadlift',bar:'#e0ba6a',note:'Hamstring stretch loading. Flat back.',sets:3,reps:'10'},
+  {id:'legcurl',day:'thu',name:'Seated Leg Curl',bar:'#252535',note:'Seated = longer length = more hypertrophy.',sets:3,reps:'12-15'},
+  {id:'standcalf',day:'thu',name:'Standing Calf Raise',bar:'#252535',note:'Full stretch at bottom. 1-sec hold.',sets:3,reps:'15'},
+  {id:'seatedcalf',day:'thu',name:'Seated Calf Raise',bar:'#252535',note:'Soleus isolation. Balances standing version.',sets:3,reps:'15-20'},
+  {id:'abwheel',day:'thu',name:'Ab Wheel Rollout',bar:'#252535',note:'Keep lower back flat. Stop if you feel it.',sets:3,reps:'8-10'},
+  {id:'hangleg',day:'thu',name:'Hanging Leg Raise',bar:'#252535',note:'Brace before raising. Control descent.',sets:3,reps:'12-15'},
+  {id:'inclinebb',day:'fri',name:'Incline Barbell Press',bar:'#c9a84c',note:'Upper chest compound. 30-45°.',isMain:true,sets:4,reps:'6-8'},
+  {id:'dbshoulderpress',day:'fri',name:'Seated DB Shoulder Press',bar:'#e0ba6a',note:'Delt mass builder. Full ROM.',sets:3,reps:'10-12'},
+  {id:'flatdb',day:'fri',name:'Flat DB Press',bar:'#e0ba6a',note:'More ROM than barbell. Feel the pec.',sets:3,reps:'12-15'},
+  {id:'pecdeck',day:'fri',name:'Pec Deck / Machine Fly',bar:'#252535',note:'Peak contraction. Constant tension. Pump.',sets:3,reps:'15'},
+  {id:'cablecrossover',day:'fri',name:'Cable Crossover',bar:'#252535',note:'High rep pump finisher. 45-60 sec rest.',sets:3,reps:'15-20'},
+  {id:'cablateral',day:'fri',name:'Cable Lateral Raise',bar:'#252535',note:'Constant tension for medial delt width.',sets:3,reps:'15'},
+  {id:'skullcrush',day:'fri',name:'Skull Crushers',bar:'#e0ba6a',note:'Long head mass. Slow eccentric.',sets:3,reps:'10-12'},
+  {id:'deadbug2',day:'fri',name:'Dead Bug',bar:'#8a7aaa',note:'Anti-extension stability. Lower back flat.',sets:3,reps:'8/side',spine:true},
+  {id:'birddog2',day:'fri',name:'Bird Dog',bar:'#8a7aaa',note:'8-10 sec hold. Spine neutral.',sets:3,reps:'8/side',spine:true},
+  {id:'ezbarcurl',day:'sat',name:'EZ Bar Curl',bar:'#c9a84c',note:'Mass builder. No swinging.',sets:4,reps:'10-12'},
+  {id:'concentration',day:'sat',name:'Concentration Curl',bar:'#e0ba6a',note:'Highest bicep EMG. Full supination at top.',sets:3,reps:'12'},
+  {id:'inclinecurl2',day:'sat',name:'Incline DB Curl',bar:'#a0b8c8',note:'Stretch loading. 2nd hit drives growth.',sets:3,reps:'12',stretch:true},
+  {id:'cgbench',day:'sat',name:'Close-Grip Bench Press',bar:'#c9a84c',note:'Most efficient compound tricep builder.',sets:4,reps:'8-10'},
+  {id:'ohdbtri',day:'sat',name:'Overhead DB Tricep Extension',bar:'#a0b8c8',note:'Long head under full stretch.',sets:3,reps:'12-15',stretch:true},
+  {id:'tricablepush',day:'sat',name:'Cable Pushdown',bar:'#252535',note:'Lateral head finisher.',sets:3,reps:'15'},
+  {id:'rdl2',day:'sat',name:'Romanian Deadlift',bar:'#e0ba6a',note:'Posterior maintenance.',sets:3,reps:'10'},
+  {id:'bss',day:'sat',name:'Bulgarian Split Squat',bar:'#e0ba6a',note:'Unilateral. Upright trunk = glute bias.',sets:3,reps:'10/leg'},
+  {id:'hangleg2',day:'sat',name:'Hanging Leg Raise',bar:'#252535',note:'Controlled. Full hang.',sets:3,reps:'12-15'},
+  {id:'mcgillcurl2',day:'sat',name:'McGill Curl-Up',bar:'#8a7aaa',note:'Spine neutral. No spinal flexion.',sets:3,reps:'8-10',spine:true},
+];
+const TRAINING_MEALS=[
+  {id:'tm1',label:'7:00–8:00 AM · Breakfast',name:'Kirkland Sandwich + Fit Crunch',foods:'1 Kirkland breakfast sandwich · 1 Fit Crunch snack bar · Black coffee',p:35,c:47,f:28,cal:580,bar:'#c9a84c'},
+  {id:'tm2',label:'12:00 PM · Lunch',name:'Ground Turkey Rice Bowl',foods:'8oz lean ground turkey · 1.5 cups white rice · Roasted broccoli + peppers · Soy sauce, garlic, olive oil',p:55,c:55,f:14,cal:620,bar:'#e0ba6a'},
+  {id:'tm3',label:'5:00 PM · Pre-Workout (Optional)',name:'Protein Shake + Quick Carb',foods:'1 scoop whey protein · Banana or Sour Patch · Only if feeling flat before 6pm session',p:25,c:30,f:2,cal:240,bar:'#c49a6c'},
+  {id:'tm4',label:'8:00–9:00 PM · Post-Workout (Spa)',name:'Whey Shake + Sour Patch',foods:'2 scoops whey protein in shaker · 1 snack size bag Sour Patch Kids · Mix before leaving gym — drink in spa',p:50,c:47,f:4,cal:420,bar:'#7c5cbf'},
+  {id:'tm5',label:'9:30–10:00 PM · Dinner at Home',name:'Chicken / Steak + Salad',foods:'8oz chicken breast or 6oz lean steak · Large mixed greens salad · Olive oil + lemon · Small sweet potato (optional)',p:52,c:30,f:16,cal:470,bar:'#2dd4a0'},
+];
+const REST_MEALS=[
+  {id:'rm1',label:'7:00–8:00 AM · Breakfast',name:'Kirkland Sandwich + Fit Crunch',foods:'1 Kirkland breakfast sandwich · 1 Fit Crunch snack bar · Black coffee',p:35,c:47,f:28,cal:580,bar:'#c9a84c'},
+  {id:'rm2',label:'12:00 PM · Lunch',name:'Ground Turkey Rice Bowl',foods:'8oz lean ground turkey · 1.5 cups white rice · Extra roasted vegetables',p:55,c:55,f:14,cal:620,bar:'#e0ba6a'},
+  {id:'rm3',label:'Evening · Dinner',name:'Protein + Salad + Light Carb',foods:'8oz chicken or 6oz lean steak · Large mixed salad · Olive oil + lemon · Small sweet potato (optional)',p:52,c:30,f:16,cal:470,bar:'#2dd4a0'},
+];
+
+const DAY_KEYS=['mon','tue','thu','fri','sat'];
+const DAY_NAMES={mon:'Monday',tue:'Tuesday',thu:'Thursday',fri:'Friday',sat:'Saturday'};
+const DAY_DETAIL={mon:'Chest · Triceps · Abs',tue:'Back · Biceps · Abs',thu:'Legs · Abs',fri:'Chest · Shoulders · Triceps · Abs',sat:'Arms · Posterior · Abs'};
+const DAY_CATS={
+  mon:[{l:'Compound Anchor',ids:['bench','dips']},{l:'Chest — Stretch Load',ids:['inclinedb','inclinecablefly']},{l:'Triceps',ids:['ohcabletri','ropepushdown']},{l:'Abs — Spine Safe',ids:['mcgillcurl','deadbug']}],
+  tue:[{l:'Compound Anchor',ids:['deadlift','pullups']},{l:'Back Volume',ids:['bbrow','pulldown','reardelt']},{l:'Biceps — Priority',ids:['inclinecurl','bbcurl','hammercurl']},{l:'Abs — Spine Safe',ids:['sideplank','birddog']}],
+  thu:[{l:'Strength Anchors',ids:['squat','pitshark','hipthrust']},{l:'Quad Hypertrophy',ids:['hacksquat','legext']},{l:'Hamstrings',ids:['rdl','legcurl']},{l:'Calves',ids:['standcalf','seatedcalf']},{l:'Abs',ids:['abwheel','hangleg']}],
+  fri:[{l:'Compound Anchor',ids:['inclinebb','dbshoulderpress']},{l:'Chest — Pump Focus',ids:['flatdb','pecdeck','cablecrossover']},{l:'Shoulders + Triceps',ids:['cablateral','skullcrush']},{l:'Abs — Spine Safe',ids:['deadbug2','birddog2']}],
+  sat:[{l:'Biceps — Full Volume',ids:['ezbarcurl','concentration','inclinecurl2']},{l:'Triceps — Full Volume',ids:['cgbench','ohdbtri','tricablepush']},{l:'Posterior — Maintenance',ids:['rdl2','bss']},{l:'Abs — Finisher',ids:['hangleg2','mcgillcurl2']}],
+};
+
+// ══ STORAGE ══
+const ld=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const profile=ld('apex_profile')||{};
+const wkData=()=>ld('apex_hyp_v2')||{};
+const getCW=()=>(wkData().currentWeek||6);
+const getWD=w=>WEEKS.find(x=>x.w===w)||WEEKS[0];
+
+// ══ INIT PROFILE ══
+const uname=profile['f-name']||'Athlete';
+const goalMap={shred:'Get Shredded',muscle:'Build Muscle',strength:'Strength',powerbuilding:'Powerbuilding',athletic:'Athletic'};
+const goalStr=goalMap[profile['f-goal']]||'APEX';
+document.getElementById('tb-av').textContent=uname[0].toUpperCase();
+document.getElementById('tb-name').textContent=uname;
+document.getElementById('tb-goal').textContent=goalStr;
+const h=new Date().getHours();
+document.getElementById('d-greet').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+uname;
+document.getElementById('d-sub').textContent=goalStr+' · Training '+(profile['f-days']||['Mon','Tue','Thu','Fri','Sat']).join(', ');
+// cw-sub set when coach tab opened
+
+// ══ NAVIGATION ══
+// Key: use a Map of screen IDs to DOM elements - toggle only opacity + pointer-events via class
+const SCREENS={dash:'s-dash',workout:'s-workout',nutrition:'s-nutrition',coach:'s-coach',progress:'s-progress'};
+const NAVS={dash:'bn-dash',workout:'bn-workout',nutrition:'bn-nutrition',coach:'bn-coach',progress:'bn-progress'};
+let cur='dash';
+
+function goTo(to){
+  if(to===cur)return;
+  // Explicitly hide current screen
+  const curEl=document.getElementById(SCREENS[cur]);
+  curEl.classList.remove('active');
+  curEl.style.display='none';
+  document.getElementById(NAVS[cur]).classList.remove('on');
+  cur=to;
+  // Explicitly show new screen
+  const newEl=document.getElementById(SCREENS[to]);
+  newEl.classList.add('active');
+  newEl.style.display=to==='coach'?'flex':'block';
+  document.getElementById(NAVS[to]).classList.add('on');
+  if(to==='coach'){
+    // Build coach UI on first visit - not in HTML on load
+    if(!coachInited){
+      coachInited=true;
+      newEl.innerHTML=`
+    <div class="coach-hdr">
+      <div class="coach-av"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="2.5" stroke="#c9a84c" stroke-width="1.1"/><path d="M2 13c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#c9a84c" stroke-width="1.1" stroke-linecap="round"/></svg></div>
+      <div><div class="coach-nm">APEX Coach</div><div class="coach-status"><div class="coach-dot"></div>Online</div></div>
+      <button class="clear-btn" onclick="clearCoach()">Clear</button>
+    </div>
+    <div class="coach-body" id="coach-msgs"></div>
+    <div class="coach-footer">
+      <div id="coach-api-wrap" class="coach-api" style="display:none;">
+        <div class="cap-title">Activate AI Coach</div>
+        <div class="cap-body">Enter your Anthropic API key from console.anthropic.com</div>
+        <div class="cap-row"><input class="cap-in" type="password" id="cap-in" placeholder="sk-ant-..."><button class="cap-btn" onclick="saveKey()">Save</button></div>
+      </div>
+      <div class="chat-wrap">
+        <textarea class="chat-in" id="chat-in" placeholder="Ask your APEX Coach..." rows="1" onkeydown="chatKey(event)" oninput="chatResize(this)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="coachSend()"><svg viewBox="0 0 12 12" fill="none"><path d="M1 11L11 6L1 1L1 5L8 6L1 7Z" fill="#070709"/></svg></button>
+      </div>
+    </div>
+`;
+      // Show API prompt if no key
+      // coach-api-wrap shown when coach tab opens
+      // Load saved conversation
+      const saved=ld('apex_coach_conv')||[];
+      if(saved.length){
+        coachConv=saved;
+        saved.forEach(m=>addMsg(m.role,m.content));
+      } else {
+        // Show welcome
+        const msgs=document.getElementById('coach-msgs');
+        const w=buildWelcome();
+        msgs.appendChild(w);
+      }
+    }
+    const body=document.getElementById('coach-msgs');
+    if(body)setTimeout(()=>{body.scrollTop=body.scrollHeight;},50);
+  } else {
+    newEl.scrollTop=0;
+  }
+  if(to==='dash')updateDash();
+  if(to==='progress'){renderWts();renderPRs();}
+}
+
+// ══ WEEK STRIP ══
+function buildWeekStrip(){
+  const cw=getCW();
+  document.getElementById('week-strip').innerHTML=WEEKS.map(w=>`
+    <div class="wk-day${w.w===cw?' on':''}" onclick="selectWeek(${w.w})">
+      <div class="wk-n">W${w.w}</div>
+      <div class="wk-nm">${w.name}</div>
+      <div class="wk-pct">${w.pct}</div>
+    </div>`).join('');
+}
+function selectWeek(w){
+  const d=wkData();d.currentWeek=w;sv('apex_hyp_v2',d);
+  buildWeekStrip();buildDayTabs();buildDay(curDay);
+}
+
+// ══ DAY TABS ══
+let curDay=DAY_KEYS[0];
+function buildDayTabs(){
+  document.getElementById('day-tabs').innerHTML=DAY_KEYS.map(d=>`
+    <button class="dt-btn${d===curDay?' on':''}" onclick="buildDay('${d}')">${DAY_NAMES[d].slice(0,3)}</button>`).join('');
+}
+
+// ══ WORKOUT BUILD ══
+function buildDay(day){
+  curDay=day;
+  buildDayTabs();
+  const wd=getWD(getCW());
+  document.getElementById('rx-title').textContent=DAY_NAMES[day]+' — '+DAY_DETAIL[day];
+  document.getElementById('rx-sets').textContent=wd.sets+'×'+wd.reps;
+  document.getElementById('rx-pct').textContent=wd.pct;
+  document.getElementById('rx-rpe').textContent='RPE '+wd.rpe;
+  const cats=DAY_CATS[day]||[];
+  const d=wkData();
+  let html='';
+  cats.forEach(cat=>{
+    html+=`<div class="cat-lbl"><span>${cat.l}</span></div>`;
+    cat.ids.forEach(id=>{
+      const ex=EXERCISES.find(e=>e.id===id);if(!ex)return;
+      const rx=ex.isMain?{sets:wd.sets,reps:wd.reps}:{sets:ex.sets,reps:ex.reps};
+      const hist=(d[id]||[]);
+      const pr=getPR(id);
+      const histHTML=hist.length?`<div class="hist">${hist.slice(-2).reverse().map((s,i)=>{const isBest=pr&&s.topWeight===pr.weight;return`<div class="hist-chip${isBest?' pr':''}">${['Last','2ago'][i]}: ${s.topWeight}×${s.topReps}</div>`;}).join('')}</div>`:'';
+      const hint=getHint(id,rx.reps);
+      const sb=(ex.stretch?'<span style="font-family:monospace;font-size:7px;padding:1px 5px;border-radius:999px;background:rgba(0,229,204,.1);border:1px solid rgba(0,229,204,.25);color:#00e5cc;margin-left:4px;">STRETCH</span>':'')+(ex.spine?'<span style="font-family:monospace;font-size:7px;padding:1px 5px;border-radius:999px;background:rgba(155,127,212,.1);border:1px solid rgba(155,127,212,.25);color:#9b7fd4;margin-left:4px;">SPINE</span>':'');
+      let sets='';
+      for(let i=1;i<=rx.sets;i++){sets+=`<div class="set-row"><div class="set-n">S${i}</div><input class="set-in" id="w-${id}-${i}" type="number" placeholder="lbs" min="0" step="2.5" oninput="chk('${id}',${i})"><input class="set-in" id="r-${id}-${i}" type="number" placeholder="reps" min="0" oninput="chk('${id}',${i})"><div class="pr-f" id="pf-${id}-${i}">★PR</div></div>`;}
+      html+=`<div class="ex-card">
+        <div class="ex-top" style="background:${ex.bar}"></div>
+        <div class="ex-body">
+          <div class="ex-row">
+            <div style="flex:1">
+              <div class="ex-name">${ex.name}${sb}</div>
+              <div class="ex-note">${ex.note}</div>
+              ${histHTML}
+              <div class="ol-hint${hint?' show':''}">${hint}</div>
+            </div>
+            <div class="ex-right">
+              <span class="ex-badge hi">${rx.sets}×${rx.reps}</span>
+              <button class="log-btn" onclick="tglLog('${id}')">LOG</button>
+            </div>
+          </div>
+        </div>
+        <div class="ex-log" id="xl-${id}">
+          ${ex.isMain?`<div class="log-tgt">W${getCW()} Target: ${rx.sets}×${rx.reps} @ ${wd.pct} · RPE ${wd.rpe}</div>`:''}
+          ${sets}
+          <button class="save-btn" onclick="saveLog('${id}','${ex.name}')">SAVE SESSION</button>
+        </div>
+      </div>`;
+    });
+  });
+  document.getElementById('workout-content').innerHTML=html;
+}
+
+function tglLog(id){document.getElementById('xl-'+id)?.classList.toggle('open');}
+function chk(id,n){
+  const w=parseFloat(document.getElementById('w-'+id+'-'+n)?.value);
+  const r=parseInt(document.getElementById('r-'+id+'-'+n)?.value);
+  const f=document.getElementById('pf-'+id+'-'+n);
+  if(f)f.classList.toggle('show',isPR(id,w,r));
+}
+function getPR(id){
+  const hist=(wkData()[id]||[]);let best=null;
+  hist.forEach(s=>(s.sets||[]).forEach(s2=>{const w=parseFloat(s2.weight),r=parseInt(s2.reps);if(w>0&&r>0&&(!best||w>best.weight||(w===best.weight&&r>best.reps)))best={weight:w,reps:r,date:s.date};}));
+  return best;
+}
+function isPR(id,w,r){if(isNaN(w)||isNaN(r)||w<=0||r<=0)return false;const p=getPR(id);return!p||w>p.weight||(w===p.weight&&r>p.reps);}
+function getHint(id,rStr){
+  const hist=(wkData()[id]||[]);if(!hist.length)return'';
+  const last=hist[hist.length-1];if(!last?.sets?.length)return'';
+  const mx=parseInt(String(rStr).split('-').pop())||10;
+  if(!last.sets.every(s=>parseInt(s.reps)>=mx))return'';
+  const isL=['squat','pitshark','hipthrust','rdl','rdl2','legcurl','hacksquat','legext','standcalf','seatedcalf','deadlift','bss'].includes(id);
+  return'✦ Ready — try '+(last.topWeight+(isL?10:5))+' lbs this week';
+}
+function saveLog(id,name){
+  const rows=document.querySelectorAll('#xl-'+id+' .set-row');
+  const sets=[];let topW=0,topR=0;
+  rows.forEach((_,i)=>{const n=i+1;const w=parseFloat(document.getElementById('w-'+id+'-'+n)?.value);const r=parseInt(document.getElementById('r-'+id+'-'+n)?.value);if(!isNaN(w)&&!isNaN(r)&&w>0&&r>0){sets.push({set:n,weight:w,reps:r});if(w>topW||(w===topW&&r>topR)){topW=w;topR=r;}}});
+  if(!sets.length){toast('Enter data first');return;}
+  const d=wkData();if(!d[id])d[id]=[];
+  d[id].push({date:new Date().toLocaleDateString(),timestamp:Date.now(),week:getCW(),sets,topWeight:topW,topReps:topR});
+  sv('apex_hyp_v2',d);
+  document.getElementById('xl-'+id)?.classList.remove('open');
+  toast('✓ '+name+' saved!');updateDash();
+}
+
+// ══ NUTRITION ══
+let dayType='train';
+function setDayType(t,btn){
+  dayType=t;
+  document.querySelectorAll('.ndt').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const isTr=t==='train';
+  document.getElementById('nm-cal').textContent=isTr?'2,400':'2,100';
+  document.getElementById('nm-carb').textContent=isTr?'210g':'150g';
+  renderMeals();
+}
+function renderMeals(){
+  const meals=dayType==='train'?TRAINING_MEALS:REST_MEALS;
+  const logged=ld('apex_meals')||{};
+  document.getElementById('nutrition-content').innerHTML=meals.map(m=>`
+    <div class="meal-card">
+      <div class="meal-bar" style="background:${m.bar}"></div>
+      <div class="meal-body">
+        <div class="meal-time">${m.label}</div>
+        <div class="meal-name">${m.name}</div>
+        <div class="meal-foods">${m.foods}</div>
+        <div class="meal-chips">
+          <span class="mc mc-p">${m.p}g P</span>
+          <span class="mc mc-c">${m.c}g C</span>
+          <span class="mc mc-f">${m.f}g F</span>
+          <span class="mc mc-cal">${m.cal} cal</span>
+        </div>
+        <button class="log-meal-btn${logged[m.id]?' done':''}" onclick="logMeal('${m.id}','${m.name}',this)">${logged[m.id]?'✓ Logged':'Log Meal'}</button>
+      </div>
+    </div>`).join('');
+}
+function logMeal(id,name,btn){
+  const l=ld('apex_meals')||{};l[id]={date:new Date().toLocaleDateString()};sv('apex_meals',l);
+  btn.textContent='✓ Logged';btn.classList.add('done');toast('✓ '+name+' logged!');
+}
+
+// ══ WEIGHT LOG ══
+function logWt(){
+  const w=parseFloat(document.getElementById('wi-lbs').value);
+  const date=document.getElementById('wi-date').value||new Date().toISOString().split('T')[0];
+  if(isNaN(w)||w<80||w>500){toast('Enter a valid weight');return;}
+  let wts=ld('apex_weights')||[];
+  wts=wts.filter(e=>e.date!==date);
+  wts.push({date,weight:w,timestamp:new Date(date).getTime()});
+  wts.sort((a,b)=>a.timestamp-b.timestamp);
+  sv('apex_weights',wts);
+  document.getElementById('wi-lbs').value='';
+  renderWts();updateDash();toast('✓ '+w+' lbs logged!');
+}
+function renderWts(){
+  const wts=ld('apex_weights')||[];
+  const start=parseFloat(profile['f-weight'])||250;
+  const tb=document.getElementById('wt-body');
+  if(!wts.length){tb.innerHTML='<tr><td colspan="5" style="color:var(--muted);font-style:italic;font-size:11px;padding:14px 10px;">No weigh-ins yet.</td></tr>';return;}
+  tb.innerHTML=[...wts].reverse().map((w,i,arr)=>{
+    const prev=arr[i+1];const chg=prev?w.weight-prev.weight:null;const vs=w.weight-start;
+    const cs=chg===null?'nt':chg<0?'dn':'up';const vs2=vs<0?'dn':vs>0?'up':'nt';
+    return`<tr><td style="font-size:11px">${w.date}</td><td style="font-family:'DM Mono',monospace;font-size:11px;">${w.weight}</td><td class="${cs}" style="font-size:11px;">${chg===null?'—':(chg>0?'+':'')+chg.toFixed(1)}</td><td class="${vs2}" style="font-size:11px;">${(vs>0?'+':'')+vs.toFixed(1)}</td><td><button class="del-w" onclick="delWt('${w.date}')">✕</button></td></tr>`;
+  }).join('');
+}
+function delWt(date){let wts=ld('apex_weights')||[];wts=wts.filter(w=>w.date!==date);sv('apex_weights',wts);renderWts();updateDash();}
+function renderPRs(){
+  const prs=[];EXERCISES.forEach(ex=>{const p=getPR(ex.id);if(p)prs.push({name:ex.name,...p});});
+  document.getElementById('pr-lbl').textContent=prs.length+' PRs';
+  document.getElementById('pr-grid').innerHTML=prs.length
+    ?prs.map(p=>`<div class="pr-card"><div class="pr-ex">${p.name}</div><div class="pr-w">${p.weight}<span style="font-size:10px;color:var(--muted2)"> lbs</span></div><div class="pr-r">${p.reps} reps · ${p.date}</div></div>`).join('')
+    :'<div style="color:var(--muted);font-size:11px;font-style:italic;">Log workouts to track PRs.</div>';
+}
+
+// ══ DASHBOARD ══
+function updateDash(){
+  const d=wkData();let sess=0,prs=0;
+  EXERCISES.forEach(ex=>{sess+=(d[ex.id]||[]).length;if(getPR(ex.id))prs++;});
+  const wts=ld('apex_weights')||[];const curW=wts.length?wts[wts.length-1].weight:null;
+  document.getElementById('ds-sess').textContent=sess;
+  document.getElementById('ds-prs').textContent=prs;
+  document.getElementById('ds-wt').textContent=curW?curW.toFixed(1):'—';
+  document.getElementById('ds-wk').textContent='W'+getCW();
+  const dayIdx=[null,'mon','tue',null,'thu','fri','sat',null];
+  const td=dayIdx[new Date().getDay()];
+  if(td&&DAY_KEYS.includes(td)){
+    document.getElementById('d-today-title').textContent=DAY_NAMES[td]+' — '+DAY_DETAIL[td];
+    document.getElementById('d-today-sub').textContent='W'+getCW()+' · '+getWD(getCW()).sets+'×'+getWD(getCW()).reps+' @ '+getWD(getCW()).pct;
+  } else {
+    document.getElementById('d-today-title').textContent='Recovery Day';
+    document.getElementById('d-today-sub').textContent='Active recovery · Spa protocol today';
+  }
+}
+
+// ══ COACH ══
+let coachConv=[];let coachKey='';let coachBusy=false;let coachInited=false;
+
+function saveKey(){
+  const k=document.getElementById('cap-in').value.trim();
+  if(!k.startsWith('sk-')){toast('Invalid API key');return;}
+  coachKey=k;sv('apex_key',k);
+  const _caw=document.getElementById('coach-api-wrap');if(_caw)_caw.style.display='none';
+  toast('✓ Coach activated!');
+}
+coachKey=ld('apex_key')||'';
+// coach-api-wrap shown when coach tab opens
+
+
+
+function coachQ(text){document.getElementById('chat-in').value=text;coachSend();}
+function chatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();coachSend();}}
+function chatResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,90)+'px';document.getElementById('send-btn').classList.toggle('rdy',el.value.trim().length>0);}
+
+function buildSys(){
+  return `You are APEX Coach — elite AI personal trainer. Be direct, specific, evidence-based. Cite research.
+USER: ${uname} · ${profile['f-age']||''} · ${profile['f-height']||''} · ${profile['f-weight']||''}lbs → ${profile['f-goalweight']||''}lbs
+GOAL: ${goalStr} · ${profile['f-aggression']||'Moderate'}
+LEVEL: ${profile['f-level']||'Intermediate'} · Trains ${(profile['f-days']||[]).join('/')} at ${profile['f-train-time']||'6pm'}
+FASTED: ${profile['f-fasted']==='yes'?'Yes':'No'}
+INJURIES: ${(profile['f-injuries']||[]).join(', ')||'None'}
+RECOVERY: ${(profile['f-recovery']||[]).join(', ')||'Sauna, cold plunge, infrared, steam, compression'}
+PROGRAM: APEX Hypertrophy W${getCW()} ${getWD(getCW()).name} · ${getWD(getCW()).sets}×${getWD(getCW()).reps} @ ${getWD(getCW()).pct}
+CALS: ${profile['f-calories']||'2,400'} training / 2,100 rest
+RULES: Cold plunge NOT within 4-6hrs post-hypertrophy. Spine-safe abs only (McGill). Use **bold** for key terms. Be concise.`;
+}
+
+async function coachSend(){
+  const inp=document.getElementById('chat-in');
+  const text=inp.value.trim();
+  if(!text||coachBusy)return;
+  if(!coachKey){const _caw2=document.getElementById('coach-api-wrap');if(_caw2)_caw2.style.display='block';return;}
+  const _cw=document.getElementById('coach-welcome');if(_cw)_cw.style.display='none';
+  inp.value='';inp.style.height='auto';
+  document.getElementById('send-btn').classList.remove('rdy');
+  addMsg('user',text);
+  coachConv.push({role:'user',content:text});
+  const typing=addTyping();coachBusy=true;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':coachKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:buildSys(),messages:coachConv,stream:true})
+    });
+    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'API error');}
+    typing.remove();
+    const msgEl=addMsg('apex','');const bub=msgEl.querySelector('.msg-bub');
+    let full='';
+    const reader=res.body.getReader();const dec=new TextDecoder();
+    while(true){
+      const{done,value}=await reader.read();if(done)break;
+      for(const line of dec.decode(value).split('\n')){
+        if(line.startsWith('data: ')){
+          const data=line.slice(6);if(data==='[DONE]')continue;
+          try{const p=JSON.parse(data);if(p.type==='content_block_delta'&&p.delta?.text){full+=p.delta.text;bub.innerHTML=fmt(full)+'<span style="color:var(--gold);animation:cr .7s step-end infinite">▌</span>';scrollCoach();}}catch(e){}
+        }
+      }
+    }
+    bub.innerHTML=fmt(full);
+    coachConv.push({role:'assistant',content:full});
+    sv('apex_coach_conv',coachConv);
+  }catch(err){typing?.remove();addErr(err.message);}
+  finally{coachBusy=false;}
+}
+
+function fmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/\n\n/g,'</p><p style="margin-top:8px">').replace(/\n/g,'<br>').replace(/^/,'<p>').replace(/$/,'</p>');}
+
+function addMsg(role,text){
+  const msgs=document.getElementById('coach-msgs');if(!msgs)return document.createElement('div');
+  const isA=role==='apex';
+  const d=document.createElement('div');
+  d.className='msg'+(isA?'':' user');
+  d.innerHTML=`<div class="msg-av ${isA?'apex':'user'}">${isA?'<svg viewBox="0 0 14 14" fill="none" width="11" height="11"><circle cx="7" cy="4.5" r="2" stroke="#c9a84c" stroke-width="1"/><path d="M2 11c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#c9a84c" stroke-width="1" stroke-linecap="round"/></svg>':uname[0].toUpperCase()}</div><div class="msg-inner"><div class="msg-who">${isA?'APEX Coach':uname}</div><div class="msg-bub ${isA?'apex':'user'}">${text?fmt(text):''}</div></div>`;
+  msgs.appendChild(d);scrollCoach();return d;
+}
+function addTyping(){
+  const msgs=document.getElementById('coach-msgs');if(!msgs)return document.createElement('div');
+  const d=document.createElement('div');d.className='typing';
+  d.innerHTML=`<div class="msg-av apex"><svg viewBox="0 0 14 14" fill="none" width="11" height="11"><circle cx="7" cy="4.5" r="2" stroke="#c9a84c" stroke-width="1"/><path d="M2 11c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#c9a84c" stroke-width="1" stroke-linecap="round"/></svg></div><div class="typing-bub"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  msgs.appendChild(d);scrollCoach();return d;
+}
+function addErr(msg){
+  const msgs=document.getElementById('coach-msgs');
+  const d=document.createElement('div');
+  d.style.cssText='background:rgba(224,85,85,.08);border:1px solid rgba(224,85,85,.2);border-left:2px solid #e05555;padding:10px 13px;font-size:11px;color:#e09090;margin-bottom:12px;line-height:1.6;';
+  d.innerHTML='<strong style="color:#e05555">Error</strong><br>'+msg;
+  msgs.appendChild(d);scrollCoach();
+}
+function scrollCoach(){const m=document.getElementById('coach-msgs');if(m)m.scrollTop=m.scrollHeight;}
+function buildWelcome(){
+  const w=document.createElement('div');
+  w.className='coach-welcome';w.id='coach-welcome';
+  w.innerHTML=`<div class="cw-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#c9a84c" stroke-width="1.1"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#c9a84c" stroke-width="1.1" stroke-linecap="round"/></svg></div><div class="cw-title">Your <em>APEX Coach</em><br>is ready.</div><div class="cw-sub">Hey ${uname}. Ask anything about training, nutrition, or recovery.</div><div class="cw-prompts"><div class="cwp" onclick="coachQ('Build me a custom program based on my profile')"><div class="cwp-lbl">Program</div><div class="cwp-text">Build my custom program</div></div><div class="cwp" onclick="coachQ('Review my macro targets for my goal')"><div class="cwp-lbl">Nutrition</div><div class="cwp-text">Review my macros</div></div><div class="cwp" onclick="coachQ('When should I use cold plunge vs sauna?')"><div class="cwp-lbl">Recovery</div><div class="cwp-text">Optimize recovery</div></div><div class="cwp" onclick="coachQ('Explain stretch-position loading science')"><div class="cwp-lbl">Science</div><div class="cwp-text">Stretch-load training</div></div></div>`;
+  return w;
+}
+
+function clearCoach(){
+  coachConv=[];sv('apex_coach_conv',[]);
+  const msgs=document.getElementById('coach-msgs');
+  if(!msgs)return;
+  msgs.innerHTML='';
+  msgs.appendChild(buildWelcome());
+}
+
+// ══ TOAST ══
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+
+// ══ ANIMATION STYLES ══
+const st=document.createElement('style');
+st.textContent='@keyframes cr{0%,100%{opacity:1;}50%{opacity:0;}}';
+document.head.appendChild(st);
+
+// ══ INIT ══
+// Force all screens to correct display state on startup
+// Also hide coach-welcome explicitly
+// coach-welcome handled when coach tab opens
+
+Object.keys(SCREENS).forEach(key=>{
+  const el=document.getElementById(SCREENS[key]);
+  if(!el)return;
+  if(key===cur){
+    el.style.display='block';
+  } else {
+    el.style.display='none';
+    el.classList.remove('active');
+  }
+});
+
+buildWeekStrip();buildDayTabs();buildDay(curDay);renderMeals();renderWts();renderPRs();updateDash();
+document.getElementById('wi-date').value=new Date().toISOString().split('T')[0];
+
+// Coach loaded on first navigation to coach tab
+
+// Hide loader
+setTimeout(()=>{const l=document.getElementById('loader');l.style.opacity='0';setTimeout(()=>l.style.display='none',400);},1000);
+</script>
+<script>
+
+
+// ══ ONBOARDING JAVASCRIPT ══
+(function() {
+  // Make key functions global so HTML onclick can reach them
+  // ── STATE ──
+const obProfile = {};
+let currentStep = 1;
+const totalSteps = 9;
+
+const LEFT_CONTENT = [
+  { kicker:'About You', title:'Let\'s build your <em>perfect</em> program.', desc:'Answer a few questions and APEX will personalize everything — your program, your macros, your recovery protocol.' },
+  { kicker:'Your Goals', title:'What does <em>success</em> look like?', desc:'Your goal determines program structure, rep ranges, and caloric targets. This is the most important question.' },
+  { kicker:'Experience', title:'How far have you <em>come?</em>', desc:'Your training age determines volume tolerance, progression speed, and how sophisticated your programming needs to be.' },
+  { kicker:'Priority Muscles', title:'Where do you want to <em>grow?</em>', desc:'APEX trains your priority muscles twice per week with higher volume and stretch-loaded protocols for maximum hypertrophy.' },
+  { kicker:'Equipment', title:'What do you have to <em>work with?</em>', desc:'APEX builds your program around your actual equipment. Every exercise has a purpose — we don\'t program what you don\'t have.' },
+  { kicker:'Schedule', title:'When do you <em>train?</em>', desc:'Consistency beats perfection. Build a schedule you can actually stick to and APEX programs around it.' },
+  { kicker:'Injuries', title:'Train smart. <em>Stay healthy.</em>', desc:'APEX modifies every program around your body. Specific injury data means safer, more effective programming.' },
+  { kicker:'Nutrition', title:'Fuel your <em>performance.</em>', desc:'Your macros are calculated from your stats and goals. Nutrition is 70% of your result — we take it seriously.' },
+  { kicker:'Review', title:'Almost <em>there.</em>', desc:'Check your profile and confirm. Once complete APEX generates your personalized program instantly.' },
+];
+
+// ── CURSOR ──
+const cur = document.getElementById('cur');
+const ring = document.getElementById('curRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => {
+  mx=e.clientX;my=e.clientY;
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+});
+(function animRing(){
+  rx+=(mx-rx)*.11;ry+=(my-ry)*.11;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+document.querySelectorAll('button,select,input,.opt-card,.chip-opt,.day-btn').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='13px';cur.style.height='13px';ring.style.width='48px';ring.style.height='48px';ring.style.borderColor='rgba(201,168,76,.5)';});
+  el.addEventListener('mouseleave',()=>{cur.style.width='7px';cur.style.height='7px';ring.style.width='30px';ring.style.height='30px';ring.style.borderColor='rgba(201,168,76,.3)';});
+});
+
+// ── OPTION SELECT (single) ──
+function selectOpt(el, key, val) {
+  const group = el.parentElement;
+  group.querySelectorAll('.opt-card,.chip-opt').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  obProfile[key] = val;
+}
+
+// ── CHIP TOGGLE (multi) ──
+const chipLimits = { 'priority-chips': 3 };
+function toggleChip(el, val) {
+  const group = el.parentElement;
+  const groupId = group.id;
+  const limit = chipLimits[groupId];
+  const isSelected = el.classList.contains('selected');
+  if (!isSelected && limit) {
+    const current = group.querySelectorAll('.selected').length;
+    if (current >= limit) return;
+  }
+  el.classList.toggle('selected');
+  // Update count display
+  if (groupId === 'priority-chips') {
+    const count = group.querySelectorAll('.selected').length;
+    document.getElementById('priority-count').textContent = count + ' / 3';
+    obProfile['f-priorities'] = [...group.querySelectorAll('.selected')].map(c=>c.textContent);
+  }
+  if (groupId === 'equipment-chips') obProfile['f-equipment'] = [...group.querySelectorAll('.selected')].map(c=>c.textContent);
+  if (groupId === 'recovery-chips') obProfile['f-recovery'] = [...group.querySelectorAll('.selected')].map(c=>c.textContent);
+  if (groupId === 'injury-chips') obProfile['f-injuries'] = [...group.querySelectorAll('.selected')].map(c=>c.textContent);
+  if (groupId === 'diet-chips') obProfile['f-diet'] = [...group.querySelectorAll('.selected')].map(c=>c.textContent);
+}
+
+// ── DAY TOGGLE ──
+function toggleDay(el, day) {
+  el.classList.toggle('selected');
+  const selected = [...document.querySelectorAll('.day-btn.selected')].map(d=>d.textContent);
+  obProfile['f-days'] = selected;
+  document.getElementById('days-count').textContent = selected.length + ' day' + (selected.length!==1?'s':'');
+}
+
+// ── CALORIE SLIDER ──
+function updateCals(val) {
+  const formatted = parseInt(val).toLocaleString();
+  document.getElementById('cal-val').textContent = formatted;
+  obProfile['f-calories'] = val;
+  // Auto-calculate protein at ~1g per lb of target or current weight
+  const w = parseInt(obProfile['f-goalweight']) || parseInt(document.getElementById('f-weight')?.value) || 200;
+  const pro = Math.min(w, Math.round(parseInt(val) * 0.3 / 4));
+  document.getElementById('cal-hint').textContent = `Estimated protein: ${pro}g · Remaining split between carbs and fat.`;
+}
+
+// ── NAVIGATION ──
+function nextStep() {
+  // Collect inputs from current step
+  collectInputs();
+  if (currentStep < totalSteps) {
+    goToStep(currentStep + 1);
+  } else {
+    // Complete
+    showComplete();
+  }
+}
+
+function prevStep() {
+  if (currentStep > 1) goToStep(currentStep - 1);
+}
+
+function goToStep(n) {
+  document.getElementById('step-'+currentStep)?.classList.remove('active');
+  currentStep = n;
+  document.getElementById('step-'+n)?.classList.add('active');
+  updateUI();
+  document.getElementById('right-panel').scrollTop = 0;
+}
+
+function collectInputs() {
+  // Collect text inputs for current step
+  const inputs = document.querySelectorAll('#step-'+currentStep+' .field-input, #step-'+currentStep+' .field-select, #step-'+currentStep+' .field-textarea');
+  inputs.forEach(inp => {
+    if (inp.id && inp.value) obProfile[inp.id] = inp.value;
+  });
+}
+
+function updateUI() {
+  // Progress bar
+  const pct = (currentStep / totalSteps) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  // Step counter
+  document.getElementById('step-label').textContent = currentStep;
+  // Left panel
+  const lc = LEFT_CONTENT[currentStep-1];
+  if (lc) {
+    document.getElementById('left-kicker-text').textContent = lc.kicker;
+    document.getElementById('left-title').innerHTML = lc.title;
+    document.getElementById('left-desc').textContent = lc.desc;
+    document.getElementById('left-num').textContent = String(currentStep).padStart(2,'0');
+  }
+  // Left step indicators
+  document.querySelectorAll('.ls-item').forEach(item => {
+    const s = parseInt(item.dataset.step);
+    item.classList.remove('active','done');
+    if (s === currentStep) item.classList.add('active');
+    else if (s < currentStep) item.classList.add('done');
+  });
+  // Back button
+  const backBtn = document.getElementById('back-btn');
+  backBtn.style.opacity = currentStep > 1 ? '1' : '0';
+  backBtn.style.pointerEvents = currentStep > 1 ? 'auto' : 'none';
+  // Next button text
+  document.getElementById('next-btn').innerHTML = currentStep === totalSteps
+    ? 'Generate My Program <svg viewBox="0 0 14 14" fill="none"><path d="M4 2 L9 7 L4 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>'
+    : 'Continue <svg viewBox="0 0 14 14" fill="none"><path d="M4 2 L9 7 L4 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
+  // Build summary on step 9
+  if (currentStep === 9) buildSummary();
+}
+
+function buildSummary() {
+  collectInputs();
+  const rows = [
+    { key:'Name', val: obProfile['f-name'] || '—' },
+    { key:'Age', val: obProfile['f-age'] ? obProfile['f-age']+' years' : '—' },
+    { key:'Height', val: obProfile['f-height'] || '—' },
+    { key:'Current Weight', val: obProfile['f-weight'] ? obProfile['f-weight']+' lbs' : '—' },
+    { key:'Goal Weight', val: obProfile['f-goalweight'] ? obProfile['f-goalweight']+' lbs' : 'Not set' },
+    { key:'Primary Goal', val: formatVal(obProfile['f-goal']) },
+    { key:'Aggression', val: formatVal(obProfile['f-aggression']) },
+    { key:'Experience Level', val: formatVal(obProfile['f-level']) },
+    { key:'Training Time', val: obProfile['f-train-time'] || '—' },
+    { key:'Trains Fasted', val: obProfile['f-fasted'] === 'yes' ? 'Yes' : obProfile['f-fasted'] === 'no' ? 'No' : '—' },
+    { key:'Priority Muscles', val: (obProfile['f-priorities']||[]).join(', ') || '—' },
+    { key:'Training Days', val: (obProfile['f-days']||[]).join(', ') || '—' },
+    { key:'Session Length', val: obProfile['f-duration'] ? obProfile['f-duration']+' min' : '—' },
+    { key:'Injuries', val: (obProfile['f-injuries']||[]).join(', ') || 'None' },
+    { key:'Daily Calories', val: obProfile['f-calories'] ? parseInt(obProfile['f-calories']).toLocaleString()+' cal' : '2,400 cal' },
+    { key:'Dietary Restrictions', val: (obProfile['f-diet']||[]).join(', ') || 'None' },
+    { key:'Recovery Tools', val: (obProfile['f-recovery']||[]).join(', ') || '—' },
+  ];
+  document.getElementById('summary-grid').innerHTML = rows.map(r => `
+    <div class="sum-row">
+      <div class="sum-key">${r.key}</div>
+      <div class="sum-val${r.key==='Primary Goal'||r.key==='Daily Calories'?' gold':''}">${r.val}</div>
+    </div>`).join('');
+}
+
+function formatVal(v) {
+  if (!v) return '—';
+  const map = {
+    shred:'Get Shredded',muscle:'Build Muscle',strength:'Strength',
+    powerbuilding:'Powerbuilding',athletic:'Athletic',
+    conservative:'Conservative',moderate:'Moderate',aggressive:'Aggressive',
+    beginner:'Beginner',intermediate:'Intermediate',advanced:'Advanced',
+  };
+  return map[v] || v.charAt(0).toUpperCase() + v.slice(1);
+}
+
+function showComplete() {
+  collectInputs();
+  document.getElementById('step-9').classList.remove('active');
+  // Show the completion screen - it's position:fixed so it covers everything
+  const sc = document.getElementById('step-complete');
+  sc.style.display = 'flex';
+  // Completely remove bottom nav from layout
+  const obNav = document.querySelector('#onboarding-overlay .bottom-nav');
+  if(obNav) {
+    obNav.style.display = 'none';
+    obNav.style.visibility = 'hidden';
+    obNav.style.height = '0';
+    obNav.style.overflow = 'hidden';
+    obNav.style.position = 'absolute';
+    obNav.style.zIndex = '-1';
+    obNav.style.pointerEvents = 'none';
+  }
+  // Hide next button arrow that overlaps completion screen
+  const nextBtn = document.getElementById('next-btn');
+  if(nextBtn) nextBtn.style.display = 'none';
+  const backBtn = document.getElementById('back-btn');
+  if(backBtn) backBtn.style.display = 'none';
+  // Make right panel full height and scrollable
+  const right = document.querySelector('#onboarding-overlay .right');
+  if(right) {
+    right.style.flex = '1';
+    right.style.height = '100%';
+    right.style.paddingBottom = '40px';
+  }
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('step-label').textContent = '✓';
+  // Set completion macros
+  const cal = parseInt(obProfile['f-calories']) || 2400;
+  const w = parseInt(obProfile['f-goalweight']) || parseInt(obProfile['f-weight']) || 200;
+  const pro = Math.round(w * 0.9);
+  const goalMap = {shred:'APEX Shred',muscle:'APEX Hyp.',strength:'APEX Strength',powerbuilding:'Powerbuilding',athletic:'APEX Athletic'};
+  document.getElementById('cs-cal').textContent = cal.toLocaleString();
+  document.getElementById('cs-pro').textContent = pro + 'g';
+  document.getElementById('cs-prog').textContent = goalMap[obProfile['f-goal']] || 'Custom';
+  // Save profile
+  try { localStorage.setItem('apex_profile', JSON.stringify(obProfile)); } catch(e) {}
+}
+
+
+
+
+// Onboarding init called when overlay shown
+  
+  // Expose to global scope
+  window.nextStep = nextStep;
+  window.prevStep = prevStep;
+  window.selectOpt = selectOpt;
+  window.toggleChip = toggleChip;
+  window.toggleDay = toggleDay;
+  window.updateCals = updateCals;
+  
+  // Init onboarding
+  window.initOnboarding = function() {
+    updateUI();
+    updateCals(2400);
+  };
+})();
+
+// Safe stubs for coach functions called before coach tab opens
+window.coachQ = function(text){ 
+  goTo('coach'); 
+  setTimeout(()=>{ if(window._coachReady) coachQ(text); }, 600);
+};
+
+// ══ ONBOARDING WIRING ══
+// Check if user has completed onboarding
+function checkOnboarding(){
+  const p = ld('apex_profile');
+  if(!p || !p['f-name']){
+    // No profile - show onboarding
+    document.getElementById('onboarding-overlay').classList.add('visible');
+    // Hide main app elements
+    document.getElementById('app-topbar').style.display='none';
+    document.getElementById('app-body').style.display='none';
+    document.getElementById('app-nav').style.display='none';
+    // Init onboarding
+    if(window.initOnboarding) window.initOnboarding();
+  }
+}
+
+// Called when onboarding completes - transition to app
+function completeOnboardingAndLaunch(){
+  const overlay = document.getElementById('onboarding-overlay');
+  overlay.style.opacity='0';
+  overlay.style.transition='opacity .4s ease';
+  setTimeout(()=>{
+    // Fully hide onboarding overlay
+    overlay.classList.remove('visible');
+    overlay.style.display='none';
+    overlay.style.opacity='';
+    overlay.style.transition='';
+    // Show app elements by ID to avoid grabbing wrong elements
+    const appTopbar = document.querySelector('.topbar:not(#onboarding-overlay .topbar)');
+    const appBody = document.getElementById('s-dash').parentElement;
+    const appNav = document.querySelector('.bottom-nav:not(#onboarding-overlay .bottom-nav)');
+    if(appTopbar) appTopbar.style.display='';
+    if(appBody) appBody.style.display='';
+    if(appNav) appNav.style.display='';
+    // Also directly show the app-body and main bottom nav
+    // Use IDs to target exactly the right app elements
+    const at = document.getElementById('app-topbar');
+    const ab = document.getElementById('app-body');
+    const an = document.getElementById('app-nav');
+    if(at) at.style.display='flex';
+    if(ab) ab.style.display='';
+    if(an) an.style.display='flex';
+    // Reinitialize app with new profile data
+    initAppWithProfile();
+  }, 400);
+}
+
+function initAppWithProfile(){
+  const p = ld('apex_profile')||{};
+  const name = p['f-name']||'Athlete';
+  const goalMap={shred:'Get Shredded',muscle:'Build Muscle',strength:'Strength',powerbuilding:'Powerbuilding',athletic:'Athletic'};
+  const goalStr = goalMap[p['f-goal']]||'APEX';
+  // Update topbar
+  const av = document.getElementById('tb-av');
+  const nm = document.getElementById('tb-name');
+  const gl = document.getElementById('tb-goal');
+  if(av) av.textContent = name[0].toUpperCase();
+  if(nm) nm.textContent = name;
+  if(gl) gl.textContent = goalStr;
+  // Update dashboard
+  const h = new Date().getHours();
+  const greet = document.getElementById('d-greet');
+  const dname = document.getElementById('d-name');
+  const dsub = document.getElementById('d-sub');
+  if(greet) greet.textContent = (h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+name;
+  if(dname) dname.innerHTML = name+', <em style="font-style:italic;color:var(--gold)">let\'s train.</em>';
+  if(dsub) dsub.textContent = goalStr+' · Training '+((p['f-days']||[]).join(', ')||'your selected days');
+  updateDash();
+}
+
+// Run onboarding check on load
+checkOnboarding();
+
+function openTracker() {
+  completeOnboardingAndLaunch();
+}
+function openCoach() {
+  completeOnboardingAndLaunch();
+}
+
+// ── PWA SERVICE WORKER ──
+// Service worker disabled until hosted on HTTPS
+// Unregister any previously registered service workers to prevent stale cache issues
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    registrations.forEach(reg => {
+      reg.unregister();
+      console.log('APEX: Unregistered stale SW:', reg.scope);
+    });
+  });
+}
+
+// ── PWA INSTALL PROMPT ──
+let deferredPrompt;
+const installBanner = document.createElement('div');
+installBanner.id = 'install-banner';
+installBanner.style.cssText = `
+  position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:#0f0f16;border:1px solid rgba(201,168,76,.3);
+  padding:12px 20px;border-radius:8px;z-index:500;
+  display:flex;align-items:center;gap:12px;
+  font-family:'Montserrat',sans-serif;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  transition:transform .4s cubic-bezier(.4,0,.2,1);
+  white-space:nowrap;
+`;
+installBanner.innerHTML = `
+  <div style="font-size:11px;font-weight:600;color:#ededf5;">Install <span style="color:#c9a84c">APEX</span> on your device</div>
+  <button onclick="installApp()" style="background:linear-gradient(135deg,#c9a84c,#e0ba6a);border:none;color:#070709;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:7px 14px;cursor:pointer;border-radius:4px;">Install</button>
+  <button onclick="dismissInstall()" style="background:none;border:none;color:#3e3e55;font-size:16px;cursor:pointer;padding:0 4px;line-height:1;">×</button>
+`;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.body.appendChild(installBanner);
+  setTimeout(() => installBanner.style.transform = 'translateX(-50%) translateY(0)', 100);
+});
+
+function installApp(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(result => {
+    if(result.outcome === 'accepted'){
+      installBanner.remove();
+    }
+    deferredPrompt = null;
+  });
+}
+function dismissInstall(){
+  installBanner.style.transform = 'translateX(-50%) translateY(80px)';
+  setTimeout(() => installBanner.remove(), 400);
+}
+
+window.addEventListener('appinstalled', () => {
+  installBanner.remove();
+  console.log('APEX installed successfully');
+});
+</script>
+</body>
+</html>
